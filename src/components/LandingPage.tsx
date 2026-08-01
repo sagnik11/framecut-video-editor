@@ -5,7 +5,7 @@ import {
   GaugeIcon,
   ResizeIcon,
 } from "@phosphor-icons/react";
-import { AutterMark } from "./AutterMark";
+import { AutterMark, autterUrl } from "./AutterMark";
 import { Brand } from "./Brand";
 import { ThemeToggle } from "./ThemeToggle";
 import { navigate } from "../lib/navigation";
@@ -52,6 +52,7 @@ export function LandingPage({ signedIn }: { signedIn: boolean }) {
         <Brand compact />
         <nav aria-label="Primary navigation">
           <a href="#editor-tour">Editor</a>
+          <a href={autterUrl} target="_blank" rel="noreferrer">Autter</a>
           <a href={sourceUrl} target="_blank" rel="noreferrer">GitHub</a>
         </nav>
         <div className="header-actions">
@@ -153,7 +154,7 @@ export function LandingPage({ signedIn }: { signedIn: boolean }) {
         <section className="sponsor-section" aria-labelledby="sponsor-title">
           <div>
             <p className="eyebrow"><span>Framecut 04</span> Open source</p>
-            <h2 id="sponsor-title">Open source, with a little help from Autter.</h2>
+            <h2 id="sponsor-title">Open source, with a little help from <a className="sponsor-name-link" href={autterUrl} target="_blank" rel="noreferrer">Autter</a>.</h2>
           </div>
           <div className="sponsor-copy">
             <p>Framecut is a public, browser-based editor. Peek under the hood, pick a roadmap issue, or make the focused media tool you wish existed.</p>

@@ -3,13 +3,16 @@ type AutterMarkProps = {
   label?: string;
 };
 
+export const autterUrl = "https://www.autter.dev/";
+
 export function AutterMark({ compact = false, label = "Sponsored by" }: AutterMarkProps) {
   return (
     <a
       className={`autter-mark ${compact ? "is-compact" : ""}`}
-      href="https://www.autter.dev/"
+      href={autterUrl}
       target="_blank"
       rel="noreferrer"
+      title="Visit Autter"
       aria-label="Visit Autter, sponsor of Framecut"
     >
       {!compact && <span>{label}</span>}

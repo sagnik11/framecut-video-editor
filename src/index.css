@@ -575,6 +575,8 @@ svg {
 }
 
 .sponsor-copy { padding-top: var(--space-xs); }
+.sponsor-name-link { color: inherit; text-decoration-color: var(--accent); text-decoration-thickness: var(--rule-hair); text-underline-offset: 0.16em; }
+.sponsor-name-link:hover { color: var(--accent-strong); }
 .sponsor-actions { margin-top: var(--space-lg); display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-lg); }
 
 .site-footer {
