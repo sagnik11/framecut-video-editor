@@ -15,28 +15,28 @@ const sourceUrl = "https://github.com/sagnik11/framecut-video-editor";
 const tools = [
   {
     icon: FilmSlateIcon,
-    index: "01",
+    index: "1.0",
     name: "Stop motion",
     description: "Pick a rhythm from one to 24 frames per second. Four fps is ready when you are.",
     output: "Custom FPS",
   },
   {
     icon: CropIcon,
-    index: "02",
+    index: "2.0",
     name: "Crop",
     description: "Keep the good bit. Reframe freely or grab a familiar 16:9, 9:16, 1:1, or 4:5 preset.",
     output: "Exact frame",
   },
   {
     icon: ResizeIcon,
-    index: "03",
+    index: "3.0",
     name: "Resize",
     description: "Make it fit the feed, the screen, or your own exact dimensions without squashing the picture.",
     output: "Up to 8K",
   },
   {
     icon: GaugeIcon,
-    index: "04",
+    index: "4.0",
     name: "Compress",
     description: "Shrink the file with one friendly quality control, then export a dependable MP4.",
     output: "H.264 MP4",
@@ -66,7 +66,6 @@ export function LandingPage({ signedIn }: { signedIn: boolean }) {
       <main>
         <section className="hero-section" aria-labelledby="hero-title">
           <div className="hero-copy">
-            <p className="eyebrow"><span>Framecut 01</span> Your tiny video workbench</p>
             <h1 id="hero-title">Make stop motion. Right now.</h1>
             <p className="hero-lede">Drop in a clip, pick the rhythm, and shape every frame without learning a giant video suite first.</p>
             <div className="hero-actions">
@@ -104,7 +103,6 @@ export function LandingPage({ signedIn }: { signedIn: boolean }) {
 
         <section className="editor-tour" id="editor-tour" aria-labelledby="editor-tour-title">
           <div className="section-heading">
-            <p className="eyebrow"><span>Framecut 02</span> The workbench</p>
             <h2 id="editor-tour-title">Everything stays where you can see it.</h2>
             <p>Preview, play, crop, time, and export without hunting through a maze of menus.</p>
           </div>
@@ -132,28 +130,28 @@ export function LandingPage({ signedIn }: { signedIn: boolean }) {
           </div>
         </section>
 
-        <section className="tool-section" id="features" aria-labelledby="tools-title">
-          <div className="tool-intro">
-            <p className="eyebrow"><span>Framecut 03</span> The whole toolbox</p>
-            <h2 id="tools-title">Four tools. Plenty to play with.</h2>
-            <p>Framecut keeps the toolbox small, so you can make the thing before the idea gets cold.</p>
+        <section className="workflow-section" id="features" aria-labelledby="tools-title">
+          <div className="workflow-intro">
+            <h2 id="tools-title">Four moves. One finished clip.</h2>
+            <p><span className="head-inline">The order is simple.</span> Set the rhythm, keep the good part, choose the canvas, then trim the weight.</p>
           </div>
-          <div className="tool-ledger">
+          <ol className="workflow-list">
             {tools.map(({ icon: Icon, index, name, description, output }) => (
-              <article className="tool-row" key={name}>
-                <span className="tool-index">{index}</span>
-                <Icon aria-hidden="true" />
-                <h3>{name}</h3>
+              <li className="workflow-step" key={name}>
+                <span className="workflow-index">{index}</span>
+                <div className="workflow-name">
+                  <Icon aria-hidden="true" />
+                  <h3>{name}</h3>
+                </div>
                 <p>{description}</p>
-                <span className="tool-output">{output}</span>
-              </article>
+                <span className="workflow-output">{output}</span>
+              </li>
             ))}
-          </div>
+          </ol>
         </section>
 
         <section className="sponsor-section" aria-labelledby="sponsor-title">
           <div>
-            <p className="eyebrow"><span>Framecut 04</span> Open source</p>
             <h2 id="sponsor-title">Open source, with a little help from <a className="sponsor-name-link" href={autterUrl} target="_blank" rel="noreferrer">Autter</a>.</h2>
           </div>
           <div className="sponsor-copy">
@@ -167,10 +165,6 @@ export function LandingPage({ signedIn }: { signedIn: boolean }) {
       </main>
 
       <footer className="site-footer">
-        <div className="footer-marquee" aria-hidden="true">
-          <div><span>STOP</span><i /> <span>CROP</span><i /> <span>RESIZE</span><i /> <span>COMPRESS</span><i /> <span>PLAY</span><i /></div>
-          <div><span>STOP</span><i /> <span>CROP</span><i /> <span>RESIZE</span><i /> <span>COMPRESS</span><i /> <span>PLAY</span><i /></div>
-        </div>
         <p>A small editor with a soft spot for frames.</p>
         <div className="footer-meta">
           <Brand compact />

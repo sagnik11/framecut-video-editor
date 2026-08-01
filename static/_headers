@@ -1,0 +1,17 @@
+/
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/sign-in
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/sign-up
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/projects
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/editor/*
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

@@ -1,7 +1,6 @@
 import {
   ArrowLeftIcon,
   CheckCircleIcon,
-  CloudArrowUpIcon,
   DownloadSimpleIcon,
   FileVideoIcon,
   UploadSimpleIcon,
@@ -160,7 +159,7 @@ export function Editor({ projectId }: { projectId: string }) {
   useEffect(() => {
     if (!settingsReady || !project) return;
     const timeout = window.setTimeout(() => {
-      void api.updateProject(project.id, { settings }).catch(() => setNotice("Changes are local. Cloud autosave is temporarily unavailable."));
+      void api.updateProject(project.id, { settings }).catch(() => setNotice("Changes are local. Autosave is temporarily unavailable."));
     }, 700);
     return () => window.clearTimeout(timeout);
   }, [project, settings, settingsReady]);
@@ -418,7 +417,7 @@ export function Editor({ projectId }: { projectId: string }) {
           <input className="project-name-input" value={project.name} maxLength={80} aria-label="Project name" onChange={(event) => setProject({ ...project, name: event.target.value })} onBlur={() => void renameProject()} />
         </div>
         <div className="editor-header-right">
-          {upload.active ? <span className="cloud-status"><CloudArrowUpIcon /> Uploading {upload.progress}%</span> : project.sourceReady ? <span className="cloud-status saved"><CheckCircleIcon weight="fill" /> Saved</span> : null}
+          {upload.active ? <span className="save-status"><UploadSimpleIcon /> Uploading {upload.progress}%</span> : project.sourceReady ? <span className="save-status saved"><CheckCircleIcon weight="fill" /> Saved</span> : null}
           <AutterMark compact />
           <ThemeToggle />
           <button className="button primary" type="button" onClick={() => void renderVideo()} disabled={!sourceUrl || exporting}><DownloadSimpleIcon /> Export</button>

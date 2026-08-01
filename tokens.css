@@ -1,6 +1,7 @@
-/* Hallmark · macrostructure: Workbench · genre: playful · theme: Hum
+/* Hallmark · macrostructure: Narrative Workflow · genre: playful · theme: Hum
  * tone: casual-action-first · anchor hue: coral · enrichment: real product capture
- * nav: N1 Wordmark + 2 links · footer: Ft8 Marquee scroll · studied: no
+ * nav: N7 Brutal slab (2px, tracked, filled slab) · footer: Ft5 Statement (28ch, wordmark under, hairline) · studied: no
+ * F4 Step sequence knobs: numbering=1.0/2.0/3.0/4.0 · layout=vertical stack · connector=thick rule
  * Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5
  * contrast: pass (40–41) · slop: pass (42–45) · honest: pass (46) · chrome: pass (47)
  * tokens: pass (48) · responsive: pass (49) · icons: pass (30) · mobile: pass (34, 49, 50–57)
@@ -61,7 +62,6 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --dur-micro: 110ms;
   --dur-short: 200ms;
   --dur-long: 380ms;
