@@ -1,0 +1,115 @@
+src/lib/media-command.test.ts
+  s_06728e279d0bbe::t_80ac3ee75be3dc 28-37
+src/index.css
+  s_06728e279d0bbe::t_267f6241501019 961-968
+src/lib/media-command.ts
+  s_06728e279d0bbe::t_80ac3ee75be3dc 2,22-23
+src/lib/crop-interaction.test.ts
+  s_06728e279d0bbe::t_267f6241501019 1-38
+src/lib/crop-interaction.ts
+  s_06728e279d0bbe::t_267f6241501019 1-81
+src/lib/format.ts
+  s_06728e279d0bbe::t_80ac3ee75be3dc 31-34
+src/components/Inspector.tsx
+  s_06728e279d0bbe::t_267f6241501019 107
+  s_06728e279d0bbe::t_80ac3ee75be3dc 12,53
+src/components/Editor.tsx
+  s_06728e279d0bbe::t_6eda3dabb12117 262,264,473
+  s_06728e279d0bbe::t_e9a4df62a5a755 265-266
+  s_06728e279d0bbe::t_267f6241501019 11,15-16,30-40,62-63,263,267-271,277-316,458-472,474-484
+  s_06728e279d0bbe::t_80ac3ee75be3dc 272-276
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "development:1.6.7",
+  "base_commit_sha": "bb80095d37cc4b5c90eda691aeb450ac689241fe",
+  "branch": "main",
+  "prompts": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:19c2f925a2539805e4484a96ef80941bd6703eaa8593830c3bf73a0a9e5f7e78",
+      "total_additions": 251,
+      "total_deletions": 19,
+      "accepted_lines": 247,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:19c2f925a2539805e4484a96ef80941bd6703eaa8593830c3bf73a0a9e5f7e78",
+      "stats": {
+        "total_additions": 251,
+        "total_deletions": 19,
+        "accepted_lines": 247,
+        "overriden_lines": 0,
+        "files": {
+          ".dev.vars": {
+            "total_additions": 0,
+            "total_deletions": 0,
+            "accepted_lines": 1,
+            "overriden_lines": 0
+          },
+          "src/components/Editor.tsx": {
+            "total_additions": 104,
+            "total_deletions": 7,
+            "accepted_lines": 99,
+            "overriden_lines": 0
+          },
+          "src/components/Inspector.tsx": {
+            "total_additions": 3,
+            "total_deletions": 3,
+            "accepted_lines": 3,
+            "overriden_lines": 0
+          },
+          "src/index.css": {
+            "total_additions": 8,
+            "total_deletions": 6,
+            "accepted_lines": 8,
+            "overriden_lines": 0
+          },
+          "src/lib/crop-interaction.test.ts": {
+            "total_additions": 38,
+            "total_deletions": 0,
+            "accepted_lines": 38,
+            "overriden_lines": 0
+          },
+          "src/lib/crop-interaction.ts": {
+            "total_additions": 81,
+            "total_deletions": 0,
+            "accepted_lines": 81,
+            "overriden_lines": 0
+          },
+          "src/lib/format.ts": {
+            "total_additions": 4,
+            "total_deletions": 0,
+            "accepted_lines": 4,
+            "overriden_lines": 0
+          },
+          "src/lib/media-command.test.ts": {
+            "total_additions": 10,
+            "total_deletions": 0,
+            "accepted_lines": 10,
+            "overriden_lines": 0
+          },
+          "src/lib/media-command.ts": {
+            "total_additions": 3,
+            "total_deletions": 3,
+            "accepted_lines": 3,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
