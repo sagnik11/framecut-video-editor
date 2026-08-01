@@ -1,6 +1,6 @@
 # Framecut
 
-Framecut is a focused, full-stack browser video editor for stop-motion animation, compression, resizing, and cropping. It has an interactive thumbnail timeline, private accounts, persistent projects, multipart media uploads, and downloadable MP4 exports.
+Framecut is a focused, full-stack browser video editor for stop-motion animation, splitting, compression, resizing, and cropping. It has an interactive thumbnail timeline, private accounts, persistent projects, multipart media uploads, and downloadable MP4 exports.
 
 The application runs on Cloudflare Workers, stores relational data in D1, stores source videos and exports in R2, and performs video rendering on the user's device with ffmpeg.wasm.
 
@@ -14,6 +14,7 @@ The application runs on Cloudflare Workers, stores relational data in D1, stores
 - Multipart uploads in 8 MiB parts for large files
 - Authenticated byte-range streaming for smooth seeking
 - Visual thumbnail timeline with playhead, zoom, and draggable trim handles
+- Non-destructive split points with part selection, per-part preview, and individual MP4 export
 - Stop-motion frame-rate control from 1 to 24 fps, with a 4 fps default
 - Real-time stop-motion preview that holds frames at the selected cadence while source audio continues playing
 - Free crop controls plus 16:9, 9:16, 1:1, and 4:5 presets
@@ -134,7 +135,7 @@ Every project and media request verifies the active user's ownership. The R2 buc
 
 1. The editor downloads the authenticated source through the Worker's range-capable media route.
 2. ffmpeg.wasm loads as a lazy client asset only when a render starts.
-3. The command builder applies trim, crop, resize/pad, stop-motion cadence, and H.264 compression in a single render.
+3. The selected split part becomes the export range, then the command builder applies crop, resize/pad, stop-motion cadence, and H.264 compression in a single render.
 4. The resulting MP4 is exposed as a local download and uploaded to the project's private R2 export key.
 
 Stop motion is produced by sampling at the selected cadence and holding each sampled frame through a 30 fps output stream. Audio is retained when present. Crop values are normalized in the UI and converted to even pixel dimensions for encoder compatibility.
@@ -193,7 +194,7 @@ For large production workloads or mobile-first rendering, consider a future serv
 
 ## Contributing
 
-Core scope intentionally stays limited to stop motion, trim, crop, resize, compression, and export. See [ROADMAP.md](ROADMAP.md) for well-bounded extensions and [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
+Core scope intentionally stays limited to stop motion, split, trim, crop, resize, compression, and export. See [ROADMAP.md](ROADMAP.md) for well-bounded extensions and [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 
 ## License
 

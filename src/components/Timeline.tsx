@@ -9,17 +9,21 @@ import {
 import { useMemo, useRef, useState } from "react";
 import type { PointerEvent } from "react";
 import { formatDuration } from "../lib/format";
+import { getVideoSegments } from "../lib/video-split";
 
 type TimelineProps = {
   duration: number;
   currentTime: number;
   trimStart: number;
   trimEnd: number;
+  splitPoints: number[];
+  activeSegmentIndex: number;
   thumbnails: string[];
   playing: boolean;
   onTogglePlay: () => void;
   onSeek: (time: number) => void;
   onTrimChange: (start: number, end: number) => void;
+  onSelectSegment: (segmentIndex: number) => void;
 };
 
 type DragMode = "playhead" | "start" | "end" | null;
@@ -27,13 +31,15 @@ type DragMode = "playhead" | "start" | "end" | null;
 export function Timeline(props: TimelineProps) {
   const {
     duration, currentTime, trimStart, trimEnd, thumbnails, playing,
-    onTogglePlay, onSeek, onTrimChange,
+    splitPoints, activeSegmentIndex, onTogglePlay, onSeek, onTrimChange, onSelectSegment,
   } = props;
   const [zoom, setZoom] = useState(1);
   const trackRef = useRef<HTMLDivElement>(null);
   const dragMode = useRef<DragMode>(null);
   const pixelsPerSecond = 64 * zoom;
   const trackWidth = Math.max(760, duration * pixelsPerSecond);
+  const segments = getVideoSegments(trimStart, trimEnd, splitPoints);
+  const activeSegment = segments[Math.min(activeSegmentIndex, segments.length - 1)] ?? segments[0];
 
   const markers = useMemo(() => {
     const targetSpacing = 85;
@@ -84,11 +90,11 @@ export function Timeline(props: TimelineProps) {
     <section className="timeline-panel" aria-label="Video timeline">
       <div className="timeline-toolbar">
         <div className="playback-controls">
-          <button className="icon-button" type="button" onClick={() => onSeek(trimStart)} aria-label="Go to trim start"><SkipBackIcon weight="fill" /></button>
+          <button className="icon-button" type="button" onClick={() => onSeek(activeSegment?.start ?? trimStart)} aria-label="Go to selected part start"><SkipBackIcon weight="fill" /></button>
           <button className="play-button" type="button" onClick={onTogglePlay} aria-label={playing ? "Pause" : "Play"}>
             {playing ? <PauseIcon weight="fill" /> : <PlayIcon weight="fill" />}
           </button>
-          <button className="icon-button" type="button" onClick={() => onSeek(trimEnd)} aria-label="Go to trim end"><SkipForwardIcon weight="fill" /></button>
+          <button className="icon-button" type="button" onClick={() => onSeek(activeSegment?.end ?? trimEnd)} aria-label="Go to selected part end"><SkipForwardIcon weight="fill" /></button>
           <span className="timecode"><strong>{formatDuration(currentTime)}</strong> / {formatDuration(duration)}</span>
         </div>
         <div className="timeline-zoom">
@@ -126,6 +132,25 @@ export function Timeline(props: TimelineProps) {
               <button className="trim-handle trim-start" data-drag="start" type="button" aria-label="Adjust trim start"><i /></button>
               <button className="trim-handle trim-end" data-drag="end" type="button" aria-label="Adjust trim end"><i /></button>
             </div>
+            {splitPoints.length > 0 && activeSegment && (
+              <div
+                className="timeline-active-segment"
+                style={{ left: activeSegment.start * pixelsPerSecond, width: Math.max(2, activeSegment.duration * pixelsPerSecond) }}
+                aria-hidden="true"
+              />
+            )}
+            {splitPoints.map((point, index) => (
+              <button
+                key={point}
+                className="timeline-split-marker"
+                style={{ left: point * pixelsPerSecond }}
+                type="button"
+                onPointerDown={(event) => event.stopPropagation()}
+                onClick={() => onSelectSegment(index + 1)}
+                aria-label={`Select part ${index + 2} at ${formatDuration(point)}`}
+                title={`Split at ${formatDuration(point)}`}
+              ><span>{index + 2}</span></button>
+            ))}
           </div>
           <div className="playhead" data-drag="playhead" style={{ left: currentTime * pixelsPerSecond }} aria-hidden="true"><span /></div>
         </div>

@@ -5,6 +5,7 @@ describe("normalizeSettings", () => {
   it("constrains persisted editor values to render-safe bounds", () => {
     const settings = normalizeSettings({
       trim: { start: 99, end: 120 },
+      split: { points: [-2, 2, 3.95, 8] },
       stopMotion: { enabled: true, fps: 80 },
       compression: { quality: -10 },
       resize: { enabled: true, width: 8191, height: 9001 },
@@ -12,9 +13,15 @@ describe("normalizeSettings", () => {
     }, 4, 640, 360);
 
     expect(settings.trim).toEqual({ start: 4, end: 4 });
+    expect(settings.split.points).toEqual([]);
     expect(settings.stopMotion.fps).toBe(24);
     expect(settings.compression.quality).toBe(0);
     expect(settings.resize).toEqual({ enabled: true, width: 8192, height: 8192 });
     expect(settings.crop).toMatchObject({ x: 638, y: 358, width: 2, height: 2 });
+  });
+
+  it("keeps valid split points from older and current projects", () => {
+    expect(normalizeSettings(undefined, 12, 1920, 1080).split.points).toEqual([]);
+    expect(normalizeSettings({ split: { points: [9, 3, 3] } }, 12, 1920, 1080).split.points).toEqual([3, 9]);
   });
 });

@@ -4,6 +4,7 @@ import {
   FilmSlateIcon,
   GaugeIcon,
   ResizeIcon,
+  ScissorsIcon,
 } from "@phosphor-icons/react";
 import { AutterMark, autterUrl } from "./AutterMark";
 import { Brand } from "./Brand";
@@ -21,22 +22,29 @@ const tools = [
     output: "Custom FPS",
   },
   {
-    icon: CropIcon,
+    icon: ScissorsIcon,
     index: "2.0",
+    name: "Split",
+    description: "Cut at the playhead, audition each part, and export the one you want as its own MP4.",
+    output: "Clean parts",
+  },
+  {
+    icon: CropIcon,
+    index: "3.0",
     name: "Crop",
     description: "Keep the good bit. Reframe freely or grab a familiar 16:9, 9:16, 1:1, or 4:5 preset.",
     output: "Exact frame",
   },
   {
     icon: ResizeIcon,
-    index: "3.0",
+    index: "4.0",
     name: "Resize",
     description: "Make it fit the feed, the screen, or your own exact dimensions without squashing the picture.",
     output: "Up to 8K",
   },
   {
     icon: GaugeIcon,
-    index: "4.0",
+    index: "5.0",
     name: "Compress",
     description: "Shrink the file with one friendly quality control, then export a dependable MP4.",
     output: "H.264 MP4",
@@ -123,8 +131,8 @@ export function LandingPage({ signedIn }: { signedIn: boolean }) {
             </figure>
             <ol className="annotation-key">
               <li><span>1</span><div><strong>Source preview</strong><p>Inspect the visible frame and crop boundary.</p></div></li>
-              <li><span>2</span><div><strong>Four-tool inspector</strong><p>Motion, crop, resize, and compression stay together.</p></div></li>
-              <li><span>3</span><div><strong>Thumbnail timeline</strong><p>Scrub, zoom, and set exact in and out points.</p></div></li>
+              <li><span>2</span><div><strong>Focused inspector</strong><p>Motion, split, crop, resize, and compression stay together.</p></div></li>
+              <li><span>3</span><div><strong>Thumbnail timeline</strong><p>Scrub, split, zoom, and set exact in and out points.</p></div></li>
               <li><span>4</span><div><strong>Browser export</strong><p>Render locally, then download or save it to your project.</p></div></li>
             </ol>
           </div>
@@ -132,8 +140,8 @@ export function LandingPage({ signedIn }: { signedIn: boolean }) {
 
         <section className="workflow-section" id="features" aria-labelledby="tools-title">
           <div className="workflow-intro">
-            <h2 id="tools-title">Four moves. One finished clip.</h2>
-            <p><span className="head-inline">The order is simple.</span> Set the rhythm, keep the good part, choose the canvas, then trim the weight.</p>
+            <h2 id="tools-title">Five moves. One finished clip.</h2>
+            <p><span className="head-inline">The order is simple.</span> Set the rhythm, split the take, keep the good part, choose the canvas, then trim the weight.</p>
           </div>
           <ol className="workflow-list">
             {tools.map(({ icon: Icon, index, name, description, output }) => (

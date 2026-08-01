@@ -1,6 +1,6 @@
 # Community roadmap
 
-Framecut's core product scope remains deliberately narrow: stop motion, trim, crop, resize, compression, and MP4 export. The items below are optional, issue-sized extensions that contributors can start without turning the editor into a general-purpose nonlinear editing suite.
+Framecut's core product scope remains deliberately narrow: stop motion, split, trim, crop, resize, compression, and MP4 export. The items below are optional, issue-sized extensions that contributors can start without turning the editor into a general-purpose nonlinear editing suite.
 
 Before starting an item, open a GitHub issue describing the intended user flow and technical approach. Keep each pull request focused on one roadmap item.
 
@@ -48,7 +48,7 @@ If you are new to the project, start with **editor keyboard shortcuts**, **reusa
 
 ### End-to-end browser test suite
 
-**Scope:** Cover signup, project creation, upload, all four edit operations, a 4 fps render, reload persistence, and deletion using a short generated fixture.
+**Scope:** Cover signup, project creation, upload, all five edit operations, a 4 fps render, reload persistence, and deletion using a short generated fixture.
 
 **Acceptance criteria:** Tests run against local D1/R2 emulation, leave no state behind, and are documented for CI.
 

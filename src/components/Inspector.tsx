@@ -6,12 +6,14 @@ import {
   GaugeIcon,
   ScissorsIcon,
   StopIcon,
+  XIcon,
 } from "@phosphor-icons/react";
 import { useState } from "react";
 import type { CropSettings, EditorSettings } from "../types";
 import { even, evenCoordinate, formatDuration } from "../lib/format";
+import { getVideoSegments, MIN_SEGMENT_DURATION } from "../lib/video-split";
 
-type Tab = "motion" | "crop" | "resize" | "compress" | "export";
+type Tab = "motion" | "split" | "crop" | "resize" | "compress" | "export";
 
 type InspectorProps = {
   settings: EditorSettings;
@@ -21,13 +23,20 @@ type InspectorProps = {
   progress: number;
   exportStatus: string;
   resultUrl: string;
+  resultFileName: string;
+  currentTime: number;
+  activeSegmentIndex: number;
   onChange: (settings: EditorSettings) => void;
+  onSplitHere: () => void;
+  onRemoveSplit: (pointIndex: number) => void;
+  onSelectSegment: (segmentIndex: number) => void;
   onExport: () => void;
   onCancel: () => void;
 };
 
 const tabs: Array<{ id: Tab; label: string; icon: typeof FilmSlateIcon }> = [
   { id: "motion", label: "Motion", icon: FilmSlateIcon },
+  { id: "split", label: "Split", icon: ScissorsIcon },
   { id: "crop", label: "Crop", icon: CropIcon },
   { id: "resize", label: "Resize", icon: ArrowsOutIcon },
   { id: "compress", label: "Compress", icon: GaugeIcon },
@@ -54,8 +63,17 @@ function aspectCrop(aspect: CropSettings["aspect"], sourceWidth: number, sourceH
 }
 
 export function Inspector(props: InspectorProps) {
-  const { settings, sourceWidth, sourceHeight, exporting, progress, exportStatus, resultUrl, onChange, onExport, onCancel } = props;
+  const {
+    settings, sourceWidth, sourceHeight, exporting, progress, exportStatus, resultUrl,
+    resultFileName, currentTime, activeSegmentIndex, onChange, onSplitHere,
+    onRemoveSplit, onSelectSegment, onExport, onCancel,
+  } = props;
   const [tab, setTab] = useState<Tab>("motion");
+  const segments = getVideoSegments(settings.trim.start, settings.trim.end, settings.split.points);
+  const selectedSegment = segments[Math.min(activeSegmentIndex, segments.length - 1)] ?? segments[0];
+  const canSplit = Boolean(selectedSegment)
+    && currentTime - selectedSegment.start >= MIN_SEGMENT_DURATION
+    && selectedSegment.end - currentTime >= MIN_SEGMENT_DURATION;
 
   function patch<K extends keyof EditorSettings>(key: K, value: EditorSettings[K]) {
     onChange({ ...settings, [key]: value });
@@ -99,6 +117,37 @@ export function Inspector(props: InspectorProps) {
               {settings.stopMotion.enabled ? `Previewing live at ${settings.stopMotion.fps} fps` : "Enable the effect to preview it live"}
             </p>
             <div className="trim-summary"><ScissorsIcon /><span>Export range</span><strong>{formatDuration(settings.trim.end - settings.trim.start)}</strong></div>
+          </section>
+        )}
+
+        {tab === "split" && (
+          <section className="control-section split-controls">
+            <div className="control-heading"><ScissorsIcon /><div><h2>Split video</h2><p>Cut at the playhead, choose a part, and export it as its own MP4.</p></div></div>
+            <div className="split-playhead-card">
+              <div><span>Playhead</span><strong>{formatDuration(currentTime)}</strong></div>
+              <button className="button primary" type="button" onClick={onSplitHere} disabled={!canSplit}><ScissorsIcon /> Split here</button>
+            </div>
+            <p className="control-note">Drag the playhead to a new position before adding another split.</p>
+            <div className="segment-list-heading"><span>Parts</span><strong>{segments.length}</strong></div>
+            <ol className="segment-list">
+              {segments.map((segment, index) => (
+                <li key={`${segment.start}-${segment.end}`}>
+                  <button
+                    className={`segment-select ${index === activeSegmentIndex ? "active" : ""}`}
+                    type="button"
+                    onClick={() => onSelectSegment(index)}
+                    aria-pressed={index === activeSegmentIndex}
+                  >
+                    <span>Part {index + 1}</span>
+                    <strong>{formatDuration(segment.start)}–{formatDuration(segment.end)}</strong>
+                    <small>{formatDuration(segment.duration)}</small>
+                  </button>
+                  {index < settings.split.points.length && (
+                    <button className="segment-remove" type="button" onClick={() => onRemoveSplit(index)} aria-label={`Remove split after part ${index + 1}`} title="Remove split"><XIcon /></button>
+                  )}
+                </li>
+              ))}
+            </ol>
           </section>
         )}
 
@@ -160,7 +209,8 @@ export function Inspector(props: InspectorProps) {
           <section className="control-section export-controls">
             <div className="control-heading"><DownloadSimpleIcon /><div><h2>Export</h2><p>Render in your browser, then save the result to your project.</p></div></div>
             <dl className="export-summary">
-              <div><dt>Duration</dt><dd>{formatDuration(settings.trim.end - settings.trim.start)}</dd></div>
+              <div><dt>Selection</dt><dd>Part {activeSegmentIndex + 1} of {segments.length}</dd></div>
+              <div><dt>Duration</dt><dd>{formatDuration(selectedSegment?.duration ?? 0)}</dd></div>
               <div><dt>Frame cadence</dt><dd>{settings.stopMotion.enabled ? `${settings.stopMotion.fps} fps stop motion` : "Original motion"}</dd></div>
               <div><dt>Output</dt><dd>{settings.resize.enabled ? `${settings.resize.width} × ${settings.resize.height}` : "Source dimensions"}</dd></div>
               <div><dt>Format</dt><dd>MP4, H.264</dd></div>
@@ -174,7 +224,7 @@ export function Inspector(props: InspectorProps) {
             ) : (
               <button className="button primary export-button" type="button" onClick={onExport}><DownloadSimpleIcon /> Render video</button>
             )}
-            {resultUrl && !exporting && <a className="button secondary download-button" href={resultUrl} download="framecut-export.mp4"><DownloadSimpleIcon /> Download latest export</a>}
+            {resultUrl && !exporting && <a className="button secondary download-button" href={resultUrl} download={resultFileName || "framecut-export.mp4"}><DownloadSimpleIcon /> Download latest export</a>}
           </section>
         )}
       </div>

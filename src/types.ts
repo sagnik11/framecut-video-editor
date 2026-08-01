@@ -1,3 +1,5 @@
+import { normalizeSplitPoints } from "./lib/video-split";
+
 export type CropSettings = {
   enabled: boolean;
   x: number;
@@ -9,6 +11,7 @@ export type CropSettings = {
 
 export type EditorSettings = {
   trim: { start: number; end: number };
+  split: { points: number[] };
   stopMotion: { enabled: boolean; fps: number };
   compression: { quality: number };
   resize: { enabled: boolean; width: number; height: number };
@@ -41,6 +44,7 @@ export type SourceMetadata = {
 export function defaultEditorSettings(duration = 0, width = 1920, height = 1080): EditorSettings {
   return {
     trim: { start: 0, end: duration },
+    split: { points: [] },
     stopMotion: { enabled: false, fps: 4 },
     compression: { quality: 72 },
     resize: { enabled: false, width, height },
@@ -59,13 +63,17 @@ export function normalizeSettings(
   const crop = { ...defaults.crop, ...value?.crop };
   const resize = { ...defaults.resize, ...value?.resize };
   const safeStart = Math.max(0, Math.min(trim.start, duration));
+  const safeEnd = Math.max(safeStart, Math.min(trim.end || duration, duration));
   const safeX = Math.max(0, Math.min(crop.x, width - 2));
   const safeY = Math.max(0, Math.min(crop.y, height - 2));
 
   return {
     trim: {
       start: safeStart,
-      end: Math.max(safeStart, Math.min(trim.end || duration, duration)),
+      end: safeEnd,
+    },
+    split: {
+      points: normalizeSplitPoints(value?.split?.points, safeStart, safeEnd),
     },
     stopMotion: {
       enabled: value?.stopMotion?.enabled ?? defaults.stopMotion.enabled,
