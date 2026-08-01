@@ -1,0 +1,95 @@
+src/lib/stop-motion-preview.ts
+  s_06728e279d0bbe::t_2e1caa41a94bad 1-13
+src/components/Editor.tsx
+  s_06728e279d0bbe::t_2e1caa41a94bad 18,47-48,58-82,126-144,369-370,373-376,379-387
+README.md
+  s_06728e279d0bbe::t_2e1caa41a94bad 18
+src/index.css
+  s_06728e279d0bbe::t_2e1caa41a94bad 958-960,1066-1069
+src/components/Inspector.tsx
+  s_06728e279d0bbe::t_2e1caa41a94bad 97-100
+src/lib/stop-motion-preview.test.ts
+  s_06728e279d0bbe::t_2e1caa41a94bad 1-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "development:1.6.7",
+  "base_commit_sha": "2d781767c2ee8aa9eaab84a159a90080d91a625b",
+  "branch": "main",
+  "prompts": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:5399af43889d155d5052e24da8429327eabf91c3d8faf189bf0d79967a0b17d2",
+      "total_additions": 112,
+      "total_deletions": 1,
+      "accepted_lines": 113,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:5399af43889d155d5052e24da8429327eabf91c3d8faf189bf0d79967a0b17d2",
+      "stats": {
+        "total_additions": 112,
+        "total_deletions": 1,
+        "accepted_lines": 113,
+        "overriden_lines": 0,
+        "files": {
+          ".dev.vars": {
+            "total_additions": 0,
+            "total_deletions": 0,
+            "accepted_lines": 1,
+            "overriden_lines": 0
+          },
+          "README.md": {
+            "total_additions": 1,
+            "total_deletions": 0,
+            "accepted_lines": 1,
+            "overriden_lines": 0
+          },
+          "src/components/Editor.tsx": {
+            "total_additions": 62,
+            "total_deletions": 1,
+            "accepted_lines": 62,
+            "overriden_lines": 0
+          },
+          "src/components/Inspector.tsx": {
+            "total_additions": 4,
+            "total_deletions": 0,
+            "accepted_lines": 4,
+            "overriden_lines": 0
+          },
+          "src/index.css": {
+            "total_additions": 8,
+            "total_deletions": 0,
+            "accepted_lines": 8,
+            "overriden_lines": 0
+          },
+          "src/lib/stop-motion-preview.test.ts": {
+            "total_additions": 24,
+            "total_deletions": 0,
+            "accepted_lines": 24,
+            "overriden_lines": 0
+          },
+          "src/lib/stop-motion-preview.ts": {
+            "total_additions": 13,
+            "total_deletions": 0,
+            "accepted_lines": 13,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
