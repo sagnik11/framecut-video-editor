@@ -14,7 +14,7 @@ The application runs on Cloudflare Workers, stores relational data in D1, stores
 - Multipart uploads in 8 MiB parts for large files
 - Authenticated byte-range streaming for smooth seeking
 - Visual thumbnail timeline with playhead, zoom, and draggable trim handles
-- Non-destructive split points with part selection, per-part preview, and individual MP4 export
+- Non-destructive split points with part selection, per-part preview, and one-click individual MP4 downloads
 - Stop-motion frame-rate control from 1 to 24 fps, with a 4 fps default
 - Real-time stop-motion preview that holds frames at the selected cadence while source audio continues playing
 - Free crop controls plus 16:9, 9:16, 1:1, and 4:5 presets

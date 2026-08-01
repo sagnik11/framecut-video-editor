@@ -25,7 +25,7 @@ const tools = [
     icon: ScissorsIcon,
     index: "2.0",
     name: "Split",
-    description: "Cut at the playhead, audition each part, and export the one you want as its own MP4.",
+    description: "Cut at the playhead, audition each part, and download any one as its own MP4.",
     output: "Clean parts",
   },
   {

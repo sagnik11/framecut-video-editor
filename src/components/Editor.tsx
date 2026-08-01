@@ -56,6 +56,7 @@ export function Editor({ projectId }: { projectId: string }) {
   const [exporting, setExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [exportStatus, setExportStatus] = useState("");
+  const [exportingSegmentIndex, setExportingSegmentIndex] = useState<number | null>(null);
   const [resultUrl, setResultUrl] = useState("");
   const [resultFileName, setResultFileName] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -376,11 +377,14 @@ export function Editor({ projectId }: { projectId: string }) {
     }
   }
 
-  async function renderVideo() {
+  async function renderVideo(targetSegmentIndex = selectedSegmentIndex, downloadWhenReady = false) {
     if (!project || !sourceUrl || exporting) return;
+    const targetSegment = segments[Math.max(0, Math.min(targetSegmentIndex, segments.length - 1))];
+    if (!targetSegment) return;
     const abortController = new AbortController();
     exportAbortRef.current = abortController;
     setExporting(true);
+    setExportingSegmentIndex(targetSegment.index);
     setExportProgress(0);
     setExportStatus("Starting browser renderer...");
     setNotice("");
@@ -389,7 +393,7 @@ export function Editor({ projectId }: { projectId: string }) {
       const source: File | string = localFile ?? sourceUrl;
       const exportSettings: EditorSettings = {
         ...settings,
-        trim: { start: activeSegment.start, end: activeSegment.end },
+        trim: { start: targetSegment.start, end: targetSegment.end },
       };
       const rendered = await browserRenderer.render(
         source,
@@ -404,11 +408,26 @@ export function Editor({ projectId }: { projectId: string }) {
       const nextResultUrl = URL.createObjectURL(rendered);
       setResultUrl(nextResultUrl);
       setExportProgress(84);
-      setExportStatus("Saving export to your project...");
 
       const safeName = project.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "framecut";
-      const fileName = segments.length > 1 ? `${safeName}-part-${selectedSegmentIndex + 1}.mp4` : `${safeName}.mp4`;
+      const fileName = segments.length > 1 ? `${safeName}-part-${targetSegment.index + 1}.mp4` : `${safeName}.mp4`;
       setResultFileName(fileName);
+
+      if (downloadWhenReady) {
+        const download = document.createElement("a");
+        download.href = nextResultUrl;
+        download.download = fileName;
+        download.style.display = "none";
+        document.body.append(download);
+        download.click();
+        download.remove();
+        setExportProgress(100);
+        setExportStatus("Download ready.");
+        setNotice(`${segments.length > 1 ? `Part ${targetSegment.index + 1}` : "Video"} is ready. The download has started.`);
+        return;
+      }
+
+      setExportStatus("Saving export to your project...");
       const updated = await uploadMedia({
         projectId,
         blob: rendered,
@@ -421,7 +440,7 @@ export function Editor({ projectId }: { projectId: string }) {
       setProject(updated);
       setExportProgress(100);
       setExportStatus("Export ready.");
-      setNotice(`${segments.length > 1 ? `Part ${selectedSegmentIndex + 1}` : "Export"} saved to your project and ready to download.`);
+      setNotice(`${segments.length > 1 ? `Part ${targetSegment.index + 1}` : "Export"} saved to your project and ready to download.`);
     } catch (caught) {
       if (!abortController.signal.aborted) {
         console.error("Export failed", caught);
@@ -434,6 +453,7 @@ export function Editor({ projectId }: { projectId: string }) {
       }
     } finally {
       setExporting(false);
+      setExportingSegmentIndex(null);
       exportAbortRef.current = null;
     }
   }
@@ -442,6 +462,7 @@ export function Editor({ projectId }: { projectId: string }) {
     exportAbortRef.current?.abort();
     browserRenderer.cancel();
     setExporting(false);
+    setExportingSegmentIndex(null);
     setExportStatus("Export cancelled.");
     setExportProgress(0);
     setNotice("Export cancelled. Your project is unchanged.");
@@ -574,10 +595,12 @@ export function Editor({ projectId }: { projectId: string }) {
           resultFileName={resultFileName}
           currentTime={currentTime}
           activeSegmentIndex={selectedSegmentIndex}
+          exportingSegmentIndex={exportingSegmentIndex}
           onChange={setSettings}
           onSplitHere={splitAtPlayhead}
           onRemoveSplit={removeSplit}
           onSelectSegment={selectSegment}
+          onDownloadSegment={(index) => void renderVideo(index, true)}
           onExport={() => void renderVideo()}
           onCancel={cancelExport}
         />

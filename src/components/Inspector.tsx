@@ -1,5 +1,6 @@
 import {
   ArrowsOutIcon,
+  CircleNotchIcon,
   CropIcon,
   DownloadSimpleIcon,
   FilmSlateIcon,
@@ -26,10 +27,12 @@ type InspectorProps = {
   resultFileName: string;
   currentTime: number;
   activeSegmentIndex: number;
+  exportingSegmentIndex: number | null;
   onChange: (settings: EditorSettings) => void;
   onSplitHere: () => void;
   onRemoveSplit: (pointIndex: number) => void;
   onSelectSegment: (segmentIndex: number) => void;
+  onDownloadSegment: (segmentIndex: number) => void;
   onExport: () => void;
   onCancel: () => void;
 };
@@ -65,8 +68,8 @@ function aspectCrop(aspect: CropSettings["aspect"], sourceWidth: number, sourceH
 export function Inspector(props: InspectorProps) {
   const {
     settings, sourceWidth, sourceHeight, exporting, progress, exportStatus, resultUrl,
-    resultFileName, currentTime, activeSegmentIndex, onChange, onSplitHere,
-    onRemoveSplit, onSelectSegment, onExport, onCancel,
+    resultFileName, currentTime, activeSegmentIndex, exportingSegmentIndex, onChange,
+    onSplitHere, onRemoveSplit, onSelectSegment, onDownloadSegment, onExport, onCancel,
   } = props;
   const [tab, setTab] = useState<Tab>("motion");
   const segments = getVideoSegments(settings.trim.start, settings.trim.end, settings.split.points);
@@ -122,10 +125,10 @@ export function Inspector(props: InspectorProps) {
 
         {tab === "split" && (
           <section className="control-section split-controls">
-            <div className="control-heading"><ScissorsIcon /><div><h2>Split video</h2><p>Cut at the playhead, choose a part, and export it as its own MP4.</p></div></div>
+            <div className="control-heading"><ScissorsIcon /><div><h2>Split video</h2><p>Cut at the playhead, preview any part, and download it as its own MP4.</p></div></div>
             <div className="split-playhead-card">
               <div><span>Playhead</span><strong>{formatDuration(currentTime)}</strong></div>
-              <button className="button primary" type="button" onClick={onSplitHere} disabled={!canSplit}><ScissorsIcon /> Split here</button>
+              <button className="button primary" type="button" onClick={onSplitHere} disabled={!canSplit || exporting}><ScissorsIcon /> Split here</button>
             </div>
             <p className="control-note">Drag the playhead to a new position before adding another split.</p>
             <div className="segment-list-heading"><span>Parts</span><strong>{segments.length}</strong></div>
@@ -142,12 +145,25 @@ export function Inspector(props: InspectorProps) {
                     <strong>{formatDuration(segment.start)}–{formatDuration(segment.end)}</strong>
                     <small>{formatDuration(segment.duration)}</small>
                   </button>
-                  {index < settings.split.points.length && (
-                    <button className="segment-remove" type="button" onClick={() => onRemoveSplit(index)} aria-label={`Remove split after part ${index + 1}`} title="Remove split"><XIcon /></button>
-                  )}
+                  <div className="segment-actions">
+                    <button className="segment-download" type="button" onClick={() => onDownloadSegment(index)} disabled={exporting} aria-label={`Download part ${index + 1}`} title={`Download part ${index + 1}`}>
+                      {exporting && exportingSegmentIndex === index ? <CircleNotchIcon className="spinning" /> : <DownloadSimpleIcon />}
+                    </button>
+                    {index < settings.split.points.length && (
+                      <button className="segment-remove" type="button" onClick={() => onRemoveSplit(index)} disabled={exporting} aria-label={`Remove split after part ${index + 1}`} title="Remove split"><XIcon /></button>
+                    )}
+                  </div>
                 </li>
               ))}
             </ol>
+            {exporting && exportingSegmentIndex !== null && (
+              <div className="segment-render-progress export-progress" aria-live="polite">
+                <div><span>Preparing Part {exportingSegmentIndex + 1}</span><strong>{progress}%</strong></div>
+                <progress max="100" value={progress}>{progress}%</progress>
+                <small>{exportStatus}</small>
+                <button className="button secondary" type="button" onClick={onCancel}><StopIcon weight="fill" /> Cancel</button>
+              </div>
+            )}
           </section>
         )}
 
