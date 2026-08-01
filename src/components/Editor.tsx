@@ -15,6 +15,7 @@ import { api, uploadMedia } from "../lib/api";
 import { formatBytes, formatDuration } from "../lib/format";
 import { navigate } from "../lib/navigation";
 import { browserRenderer } from "../lib/renderer";
+import { getStopMotionFrameIndex } from "../lib/stop-motion-preview";
 import { createVideoThumbnails, readVideoMetadata } from "../lib/video";
 import { AutterMark } from "./AutterMark";
 import { Brand } from "./Brand";
@@ -43,6 +44,8 @@ export function Editor({ projectId }: { projectId: string }) {
   const [exportStatus, setExportStatus] = useState("");
   const [resultUrl, setResultUrl] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+  const previewFrameIndexRef = useRef(-1);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const exportAbortRef = useRef<AbortController | null>(null);
   const resultUrlRef = useRef("");
@@ -51,6 +54,31 @@ export function Editor({ projectId }: { projectId: string }) {
   const sourceHeight = project?.height ?? settings.crop.height ?? 1080;
   const sourceDuration = project?.duration ?? settings.trim.end ?? 0;
   const sourceUrl = localUrl || (project?.sourceReady ? `/api/projects/${projectId}/media/source` : "");
+
+  const drawStopMotionFrame = useCallback((force = false) => {
+    const video = videoRef.current;
+    const canvas = previewCanvasRef.current;
+    if (!settings.stopMotion.enabled || !video || !canvas || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
+
+    const frameIndex = getStopMotionFrameIndex(video.currentTime, settings.trim.start, settings.stopMotion.fps);
+    if (!force && frameIndex === previewFrameIndexRef.current) return;
+
+    const width = video.videoWidth;
+    const height = video.videoHeight;
+    if (!width || !height) return;
+
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+
+    const context = canvas.getContext("2d", { alpha: false });
+    if (!context) return;
+    context.drawImage(video, 0, 0, width, height);
+    previewFrameIndexRef.current = frameIndex;
+    canvas.dataset.frameIndex = String(frameIndex);
+    canvas.dataset.previewFps = String(settings.stopMotion.fps);
+  }, [settings.stopMotion.enabled, settings.stopMotion.fps, settings.trim.start]);
 
   const loadProject = useCallback(async () => {
     setLoading(true);
@@ -94,6 +122,25 @@ export function Editor({ projectId }: { projectId: string }) {
       .catch(() => { if (!cancelled) setThumbnails([]); });
     return () => { cancelled = true; };
   }, [sourceDuration, sourceUrl]);
+
+  useEffect(() => {
+    const canvas = previewCanvasRef.current;
+    previewFrameIndexRef.current = -1;
+    if (canvas) {
+      canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+      delete canvas.dataset.frameIndex;
+    }
+
+    if (!settings.stopMotion.enabled) return;
+
+    let animationFrame = 0;
+    const tick = () => {
+      drawStopMotionFrame();
+      if (playing) animationFrame = window.requestAnimationFrame(tick);
+    };
+    animationFrame = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [drawStopMotionFrame, playing, settings.stopMotion.enabled, sourceUrl]);
 
   useEffect(() => {
     if (!settingsReady || !project) return;
@@ -319,11 +366,25 @@ export function Editor({ projectId }: { projectId: string }) {
                   src={sourceUrl}
                   preload="metadata"
                   playsInline
+                  onLoadedData={() => drawStopMotionFrame(true)}
+                  onSeeked={() => drawStopMotionFrame(true)}
                   onTimeUpdate={onTimeUpdate}
                   onPlay={() => setPlaying(true)}
-                  onPause={() => setPlaying(false)}
+                  onPause={() => {
+                    setPlaying(false);
+                    drawStopMotionFrame(true);
+                  }}
                   onClick={() => void togglePlay()}
                 />
+                <canvas
+                  ref={previewCanvasRef}
+                  className="stop-motion-preview"
+                  hidden={!settings.stopMotion.enabled}
+                  aria-hidden="true"
+                />
+                {settings.stopMotion.enabled && (
+                  <span className="preview-mode-badge" aria-live="polite">Live preview · {settings.stopMotion.fps} fps</span>
+                )}
                 {cropStyle && <div className="crop-guide" style={cropStyle}><span /><span /><span /><span /></div>}
               </div>
               <div className="source-meta">

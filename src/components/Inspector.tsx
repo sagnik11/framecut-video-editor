@@ -94,6 +94,10 @@ export function Inspector(props: InspectorProps) {
               <input type="range" min="1" max="24" step="1" value={settings.stopMotion.fps} disabled={!settings.stopMotion.enabled} onChange={(event) => patch("stopMotion", { ...settings.stopMotion, fps: Number(event.target.value) })} />
               <small><span>More stepped</span><span>Smoother</span></small>
             </label>
+            <p className={`preview-status ${settings.stopMotion.enabled ? "active" : ""}`} aria-live="polite">
+              <i aria-hidden="true" />
+              {settings.stopMotion.enabled ? `Previewing live at ${settings.stopMotion.fps} fps` : "Enable the effect to preview it live"}
+            </p>
             <div className="trim-summary"><ScissorsIcon /><span>Export range</span><strong>{formatDuration(settings.trim.end - settings.trim.start)}</strong></div>
           </section>
         )}
