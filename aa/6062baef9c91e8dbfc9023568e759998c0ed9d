@@ -1,0 +1,71 @@
+src/components/AutterMark.tsx
+  s_06728e279d0bbe::t_edb431eb153c33 6-7,12,15
+src/components/LandingPage.tsx
+  s_06728e279d0bbe::t_edb431eb153c33 8,55,157
+src/index.css
+  s_06728e279d0bbe::t_edb431eb153c33 578-579
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "development:1.6.7",
+  "base_commit_sha": "aa6062baef9c91e8dbfc9023568e759998c0ed9d",
+  "branch": "main",
+  "prompts": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:491b677f872378b4d55000698623c7836378b0e05da05a63772c42274cfc15c2",
+      "total_additions": 9,
+      "total_deletions": 3,
+      "accepted_lines": 10,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:491b677f872378b4d55000698623c7836378b0e05da05a63772c42274cfc15c2",
+      "stats": {
+        "total_additions": 9,
+        "total_deletions": 3,
+        "accepted_lines": 10,
+        "overriden_lines": 0,
+        "files": {
+          ".dev.vars": {
+            "total_additions": 0,
+            "total_deletions": 0,
+            "accepted_lines": 1,
+            "overriden_lines": 0
+          },
+          "src/components/AutterMark.tsx": {
+            "total_additions": 4,
+            "total_deletions": 1,
+            "accepted_lines": 4,
+            "overriden_lines": 0
+          },
+          "src/components/LandingPage.tsx": {
+            "total_additions": 3,
+            "total_deletions": 2,
+            "accepted_lines": 3,
+            "overriden_lines": 0
+          },
+          "src/index.css": {
+            "total_additions": 2,
+            "total_deletions": 0,
+            "accepted_lines": 2,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
