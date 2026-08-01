@@ -98,7 +98,7 @@ export function LandingPage({ signedIn }: { signedIn: boolean }) {
         <aside className="privacy-note" aria-label="Privacy and storage">
           <span className="privacy-index">A</span>
           <strong>Your browser does the rendering.</strong>
-          <p>Your clip stays close while you work. Cloudflare stores only the projects and media you choose to save.</p>
+          <p>Your clip stays close while you work. Only the projects and media you choose to save are stored.</p>
         </aside>
 
         <section className="editor-tour" id="editor-tour" aria-labelledby="editor-tour-title">
@@ -126,7 +126,7 @@ export function LandingPage({ signedIn }: { signedIn: boolean }) {
               <li><span>1</span><div><strong>Source preview</strong><p>Inspect the visible frame and crop boundary.</p></div></li>
               <li><span>2</span><div><strong>Four-tool inspector</strong><p>Motion, crop, resize, and compression stay together.</p></div></li>
               <li><span>3</span><div><strong>Thumbnail timeline</strong><p>Scrub, zoom, and set exact in and out points.</p></div></li>
-              <li><span>4</span><div><strong>Browser export</strong><p>Render locally, then download or save to R2.</p></div></li>
+              <li><span>4</span><div><strong>Browser export</strong><p>Render locally, then download or save it to your project.</p></div></li>
             </ol>
           </div>
         </section>
@@ -156,7 +156,7 @@ export function LandingPage({ signedIn }: { signedIn: boolean }) {
             <h2 id="sponsor-title">Open source, with a little help from Autter.</h2>
           </div>
           <div className="sponsor-copy">
-            <p>Framecut is a public, Cloudflare-native editor. Peek under the hood, pick a roadmap issue, or make the focused media tool you wish existed.</p>
+            <p>Framecut is a public, browser-based editor. Peek under the hood, pick a roadmap issue, or make the focused media tool you wish existed.</p>
             <div className="sponsor-actions">
               <a className="button secondary" href={sourceUrl} target="_blank" rel="noreferrer">View repository <ArrowRightIcon /></a>
               <AutterMark label="Sponsored by" />

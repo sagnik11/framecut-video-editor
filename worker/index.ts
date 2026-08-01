@@ -22,7 +22,7 @@ async function serveFfmpegRuntime(request: Request, env: Env): Promise<Response>
   const object = await env.MEDIA.get("runtime/ffmpeg-core-0.12.10.wasm");
   if (!object) {
     return Response.json(
-      { error: "The video engine has not been seeded in R2. Run the seed:ffmpeg deployment step." },
+      { error: "The video engine is temporarily unavailable. Please try again shortly." },
       { status: 503, headers: { "cache-control": "no-store" } },
     );
   }

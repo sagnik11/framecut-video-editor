@@ -158,7 +158,7 @@ export function Inspector(props: InspectorProps) {
 
         {tab === "export" && (
           <section className="control-section export-controls">
-            <div className="control-heading"><DownloadSimpleIcon /><div><h2>Export</h2><p>Render locally, then save the result to R2.</p></div></div>
+            <div className="control-heading"><DownloadSimpleIcon /><div><h2>Export</h2><p>Render in your browser, then save the result to your project.</p></div></div>
             <dl className="export-summary">
               <div><dt>Duration</dt><dd>{formatDuration(settings.trim.end - settings.trim.start)}</dd></div>
               <div><dt>Frame cadence</dt><dd>{settings.stopMotion.enabled ? `${settings.stopMotion.fps} fps stop motion` : "Original motion"}</dd></div>

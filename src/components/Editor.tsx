@@ -197,7 +197,7 @@ export function Editor({ projectId }: { projectId: string }) {
       });
       setProject(uploaded);
       setUpload({ active: false, progress: 100, error: "" });
-      setNotice("Source video saved to Cloudflare R2.");
+      setNotice("Source video saved to your project.");
     } catch (caught) {
       setUpload({ active: false, progress: 0, error: caught instanceof Error ? caught.message : "The video could not be added." });
     }
@@ -277,7 +277,7 @@ export function Editor({ projectId }: { projectId: string }) {
       const nextResultUrl = URL.createObjectURL(rendered);
       setResultUrl(nextResultUrl);
       setExportProgress(84);
-      setExportStatus("Saving export to Cloudflare R2...");
+      setExportStatus("Saving export to your project...");
 
       const safeName = project.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "framecut";
       const updated = await uploadMedia({
@@ -292,7 +292,7 @@ export function Editor({ projectId }: { projectId: string }) {
       setProject(updated);
       setExportProgress(100);
       setExportStatus("Export ready.");
-      setNotice("Export saved to Cloudflare R2 and ready to download.");
+      setNotice("Export saved to your project and ready to download.");
     } catch (caught) {
       if (!abortController.signal.aborted) {
         console.error("Export failed", caught);
