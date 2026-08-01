@@ -1,0 +1,79 @@
+src/components/LandingPage.tsx
+  s_06728e279d0bbe::t_8e0b422db4b76d 101,129,159
+src/components/Editor.tsx
+  s_06728e279d0bbe::t_8e0b422db4b76d 200,280,295
+worker/index.ts
+  s_06728e279d0bbe::t_8e0b422db4b76d 25
+src/components/Inspector.tsx
+  s_06728e279d0bbe::t_8e0b422db4b76d 161
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "development:1.6.7",
+  "base_commit_sha": "6306617f15c6cdfee814c008d710f99bea3e8f23",
+  "branch": "main",
+  "prompts": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:8766962c533cbcc7039fe01c5e525f1df6bc2d94d63a0ebdc67a776273bd86be",
+      "total_additions": 8,
+      "total_deletions": 8,
+      "accepted_lines": 9,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:8766962c533cbcc7039fe01c5e525f1df6bc2d94d63a0ebdc67a776273bd86be",
+      "stats": {
+        "total_additions": 8,
+        "total_deletions": 8,
+        "accepted_lines": 9,
+        "overriden_lines": 0,
+        "files": {
+          ".dev.vars": {
+            "total_additions": 0,
+            "total_deletions": 0,
+            "accepted_lines": 1,
+            "overriden_lines": 0
+          },
+          "src/components/Editor.tsx": {
+            "total_additions": 3,
+            "total_deletions": 3,
+            "accepted_lines": 3,
+            "overriden_lines": 0
+          },
+          "src/components/Inspector.tsx": {
+            "total_additions": 1,
+            "total_deletions": 1,
+            "accepted_lines": 1,
+            "overriden_lines": 0
+          },
+          "src/components/LandingPage.tsx": {
+            "total_additions": 3,
+            "total_deletions": 3,
+            "accepted_lines": 3,
+            "overriden_lines": 0
+          },
+          "worker/index.ts": {
+            "total_additions": 1,
+            "total_deletions": 1,
+            "accepted_lines": 1,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
