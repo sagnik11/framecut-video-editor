@@ -1,0 +1,137 @@
+src/components/Timeline.tsx
+  s_06728e279d0bbe::t_3a48b1825c2aa9 12,19-20,26,34,41-42,93,97,135-153
+src/components/Inspector.tsx
+  s_06728e279d0bbe::t_9641b98ea47082 9,14,16,26-28,30-32,39,66-70,72-76,123-153,212-213,227
+src/index.css
+  s_06728e279d0bbe::t_33e7319e45919f 1072-1085,1124-1127,1264-1265
+src/lib/video-split.ts
+  s_06728e279d0bbe::t_caca4ae6e4f48d 1-60
+ROADMAP.md
+  s_06728e279d0bbe::t_2be1cc01169573 3,51
+src/components/Editor.tsx
+  s_06728e279d0bbe::t_a46862926a8816 265-268,271-274
+  s_06728e279d0bbe::t_629996830d992d 21,53,60,74-76,83,101,111-114,202,244,249-264,269-270,275-291,299-300,308,310,390-393,397,410-411,415,424,574-576,578-580,590-591,596-597
+src/types.ts
+  s_06728e279d0bbe::t_caca4ae6e4f48d 14,47,66,73-76
+  s_06728e279d0bbe::t_b282500315eab2 1-2
+src/components/LandingPage.tsx
+  s_06728e279d0bbe::t_2be1cc01169573 7,25,27-33,40,47,134-135,143-144
+src/lib/video-split.test.ts
+  s_06728e279d0bbe::t_caca4ae6e4f48d 1-25
+src/types.test.ts
+  s_06728e279d0bbe::t_caca4ae6e4f48d 8,16,22-25
+README.md
+  s_06728e279d0bbe::t_2be1cc01169573 3,17,138,197
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "development:1.6.7",
+  "base_commit_sha": "056ae212d65b0750b6640263c27968c48a026b76",
+  "branch": "main",
+  "prompts": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:d55a5a5417e6cb9576f76287f15383745f22fa664636377fdb3f13e0116768a0",
+      "total_additions": 308,
+      "total_deletions": 35,
+      "accepted_lines": 306,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:d55a5a5417e6cb9576f76287f15383745f22fa664636377fdb3f13e0116768a0",
+      "stats": {
+        "total_additions": 308,
+        "total_deletions": 35,
+        "accepted_lines": 306,
+        "overriden_lines": 0,
+        "files": {
+          ".dev.vars": {
+            "total_additions": 0,
+            "total_deletions": 0,
+            "accepted_lines": 1,
+            "overriden_lines": 0
+          },
+          "README.md": {
+            "total_additions": 4,
+            "total_deletions": 3,
+            "accepted_lines": 4,
+            "overriden_lines": 0
+          },
+          "ROADMAP.md": {
+            "total_additions": 2,
+            "total_deletions": 2,
+            "accepted_lines": 2,
+            "overriden_lines": 0
+          },
+          "src/components/Editor.tsx": {
+            "total_additions": 82,
+            "total_deletions": 13,
+            "accepted_lines": 80,
+            "overriden_lines": 0
+          },
+          "src/components/Inspector.tsx": {
+            "total_additions": 54,
+            "total_deletions": 4,
+            "accepted_lines": 54,
+            "overriden_lines": 0
+          },
+          "src/components/LandingPage.tsx": {
+            "total_additions": 15,
+            "total_deletions": 7,
+            "accepted_lines": 15,
+            "overriden_lines": 0
+          },
+          "src/components/Timeline.tsx": {
+            "total_additions": 28,
+            "total_deletions": 3,
+            "accepted_lines": 28,
+            "overriden_lines": 0
+          },
+          "src/index.css": {
+            "total_additions": 20,
+            "total_deletions": 0,
+            "accepted_lines": 20,
+            "overriden_lines": 0
+          },
+          "src/lib/video-split.test.ts": {
+            "total_additions": 25,
+            "total_deletions": 0,
+            "accepted_lines": 25,
+            "overriden_lines": 0
+          },
+          "src/lib/video-split.ts": {
+            "total_additions": 60,
+            "total_deletions": 0,
+            "accepted_lines": 60,
+            "overriden_lines": 0
+          },
+          "src/types.test.ts": {
+            "total_additions": 7,
+            "total_deletions": 0,
+            "accepted_lines": 7,
+            "overriden_lines": 0
+          },
+          "src/types.ts": {
+            "total_additions": 11,
+            "total_deletions": 3,
+            "accepted_lines": 10,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
