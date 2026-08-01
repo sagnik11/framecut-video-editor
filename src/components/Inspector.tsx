@@ -9,7 +9,7 @@ import {
 } from "@phosphor-icons/react";
 import { useState } from "react";
 import type { CropSettings, EditorSettings } from "../types";
-import { even, formatDuration } from "../lib/format";
+import { even, evenCoordinate, formatDuration } from "../lib/format";
 
 type Tab = "motion" | "crop" | "resize" | "compress" | "export";
 
@@ -50,7 +50,7 @@ function aspectCrop(aspect: CropSettings["aspect"], sourceWidth: number, sourceH
   const source = sourceWidth / sourceHeight;
   const width = even(source > target ? sourceHeight * target : sourceWidth);
   const height = even(source > target ? sourceHeight : sourceWidth / target);
-  return { x: even((sourceWidth - width) / 2), y: even((sourceHeight - height) / 2), width, height };
+  return { x: evenCoordinate((sourceWidth - width) / 2), y: evenCoordinate((sourceHeight - height) / 2), width, height };
 }
 
 export function Inspector(props: InspectorProps) {
@@ -104,7 +104,7 @@ export function Inspector(props: InspectorProps) {
 
         {tab === "crop" && (
           <section className="control-section">
-            <div className="control-heading"><CropIcon /><div><h2>Crop</h2><p>Reframe the visible part of your source.</p></div></div>
+            <div className="control-heading"><CropIcon /><div><h2>Crop</h2><p>Drag the crop or its corners directly in the preview.</p></div></div>
             <Toggle checked={settings.crop.enabled} onChange={(enabled) => patch("crop", { ...settings.crop, enabled })} label="Enable crop" />
             <fieldset disabled={!settings.crop.enabled}>
               <legend>Aspect ratio</legend>

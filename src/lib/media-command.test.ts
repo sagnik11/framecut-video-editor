@@ -25,4 +25,14 @@ describe("media command", () => {
     expect(qualityToCrf(200)).toBe(16);
     expect(qualityToCrf(-20)).toBe(34);
   });
+
+  it("allows a crop to start at the source origin", () => {
+    const settings = defaultEditorSettings(4, 640, 360);
+    settings.crop = { enabled: true, x: 0, y: 0, width: 320, height: 180, aspect: "16:9" };
+
+    const command = buildMediaCommand({ inputName: "input.mp4", outputName: "output.mp4", settings });
+    const filter = command[command.indexOf("-vf") + 1];
+
+    expect(filter).toContain("crop=320:180:0:0");
+  });
 });

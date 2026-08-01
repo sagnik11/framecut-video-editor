@@ -1,5 +1,5 @@
 import type { EditorSettings } from "../types";
-import { even } from "./format";
+import { even, evenCoordinate } from "./format";
 
 type BuildCommandOptions = {
   inputName: string;
@@ -19,8 +19,8 @@ export function buildMediaCommand({ inputName, outputName, settings }: BuildComm
   if (settings.crop.enabled) {
     const width = even(settings.crop.width);
     const height = even(settings.crop.height);
-    const x = Math.max(0, even(settings.crop.x));
-    const y = Math.max(0, even(settings.crop.y));
+    const x = evenCoordinate(settings.crop.x);
+    const y = evenCoordinate(settings.crop.y);
     filters.push(`crop=${width}:${height}:${x}:${y}`);
   }
 

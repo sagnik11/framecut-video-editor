@@ -8,10 +8,12 @@ import {
   WarningCircleIcon,
 } from "@phosphor-icons/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { ChangeEvent, DragEvent } from "react";
+import type { ChangeEvent, DragEvent, PointerEvent as ReactPointerEvent } from "react";
 import type { EditorSettings, Project } from "../types";
 import { defaultEditorSettings, normalizeSettings } from "../types";
 import { api, uploadMedia } from "../lib/api";
+import { moveCrop, resizeCrop } from "../lib/crop-interaction";
+import type { CropHandle } from "../lib/crop-interaction";
 import { formatBytes, formatDuration } from "../lib/format";
 import { navigate } from "../lib/navigation";
 import { browserRenderer } from "../lib/renderer";
@@ -25,6 +27,17 @@ import { ThemeToggle } from "./ThemeToggle";
 import { Timeline } from "./Timeline";
 
 type UploadState = { active: boolean; progress: number; error: string };
+type CropDrag = {
+  handle: CropHandle | "move";
+  pointerId: number;
+  startClientX: number;
+  startClientY: number;
+  stageWidth: number;
+  stageHeight: number;
+  sourceWidth: number;
+  sourceHeight: number;
+  crop: EditorSettings["crop"];
+};
 
 export function Editor({ projectId }: { projectId: string }) {
   const [project, setProject] = useState<Project | null>(null);
@@ -46,6 +59,8 @@ export function Editor({ projectId }: { projectId: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const previewFrameIndexRef = useRef(-1);
+  const cropDragRef = useRef<CropDrag | null>(null);
+  const [activeCropDrag, setActiveCropDrag] = useState<CropDrag["handle"] | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const exportAbortRef = useRef<AbortController | null>(null);
   const resultUrlRef = useRef("");
@@ -244,6 +259,61 @@ export function Editor({ projectId }: { projectId: string }) {
     setCurrentTime(video.currentTime);
   }
 
+  function startCropDrag(event: ReactPointerEvent<HTMLElement>, handle: CropDrag["handle"]) {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    const guide = event.currentTarget.closest<HTMLDivElement>(".crop-guide");
+    if (!guide) return;
+    const stage = guide.parentElement?.getBoundingClientRect();
+    if (!stage?.width || !stage.height) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    videoRef.current?.pause();
+    try {
+      guide.setPointerCapture(event.pointerId);
+    } catch {
+      // Synthetic pointers and interrupted touch gestures may not be capturable.
+    }
+    cropDragRef.current = {
+      handle,
+      pointerId: event.pointerId,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      stageWidth: stage.width,
+      stageHeight: stage.height,
+      sourceWidth,
+      sourceHeight,
+      crop: { ...settings.crop },
+    };
+    setActiveCropDrag(handle);
+  }
+
+  function updateCropDrag(event: ReactPointerEvent<HTMLDivElement>) {
+    const drag = cropDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    event.preventDefault();
+    event.stopPropagation();
+
+    const deltaX = ((event.clientX - drag.startClientX) / drag.stageWidth) * drag.sourceWidth;
+    const deltaY = ((event.clientY - drag.startClientY) / drag.stageHeight) * drag.sourceHeight;
+    const crop = drag.handle === "move"
+      ? moveCrop(drag.crop, deltaX, deltaY, drag.sourceWidth, drag.sourceHeight)
+      : resizeCrop(drag.crop, drag.handle, deltaX, deltaY, drag.sourceWidth, drag.sourceHeight);
+    setSettings((current) => ({ ...current, crop }));
+  }
+
+  function finishCropDrag(event: ReactPointerEvent<HTMLDivElement>) {
+    const drag = cropDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    cropDragRef.current = null;
+    setActiveCropDrag(null);
+  }
+
   async function renameProject() {
     if (!project || !project.name.trim()) return;
     try {
@@ -385,7 +455,34 @@ export function Editor({ projectId }: { projectId: string }) {
                 {settings.stopMotion.enabled && (
                   <span className="preview-mode-badge" aria-live="polite">Live preview · {settings.stopMotion.fps} fps</span>
                 )}
-                {cropStyle && <div className="crop-guide" style={cropStyle}><span /><span /><span /><span /></div>}
+                {cropStyle && (
+                  <div
+                    className="crop-guide"
+                    style={cropStyle}
+                    role="group"
+                    aria-label="Crop selection. Drag to move it or drag a corner to resize it."
+                    data-dragging={activeCropDrag ?? undefined}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                    }}
+                    onPointerDown={(event) => startCropDrag(event, "move")}
+                    onPointerMove={updateCropDrag}
+                    onPointerUp={finishCropDrag}
+                    onPointerCancel={finishCropDrag}
+                    onLostPointerCapture={finishCropDrag}
+                  >
+                    {(["nw", "ne", "se", "sw"] as const).map((handle) => (
+                      <button
+                        key={handle}
+                        type="button"
+                        className={`crop-handle crop-handle-${handle}`}
+                        aria-label={`Resize crop from the ${handle} corner`}
+                        onPointerDown={(event) => startCropDrag(event, handle)}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="source-meta">
                 <span>{project.sourceName ?? localFile?.name}</span>

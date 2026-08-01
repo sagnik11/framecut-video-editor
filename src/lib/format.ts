@@ -28,3 +28,7 @@ export function formatDate(value: string): string {
 export function even(value: number): number {
   return Math.max(2, Math.round(value / 2) * 2);
 }
+
+export function evenCoordinate(value: number): number {
+  return Math.max(0, Math.round(value / 2) * 2);
+}
