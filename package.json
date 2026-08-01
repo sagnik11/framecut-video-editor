@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "description": "A focused Cloudflare-native browser video editor sponsored by Autter.",
   "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

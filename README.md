@@ -47,7 +47,7 @@ Rendering runs in the browser so the Worker does not need a native FFmpeg proces
 
 ## Requirements
 
-- Node.js 20 or newer
+- Node.js 22 or newer
 - npm
 - A Cloudflare account with Workers, D1, and R2 access
 - Wrangler authentication for deployment
