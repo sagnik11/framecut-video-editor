@@ -1,0 +1,96 @@
+src/index.css
+  s_06728e279d0bbe::t_e06808e0bb7ab3 246,257,260,276,278-279,281,285-294,313,459-461,465,480-482,485,488,497,552-557,559-564,566-569,571,573,576-585,587-590,595-597,600,610,619,625,932-933,1197,1203,1208-1209,1211
+  s_06728e279d0bbe::t_0ca172310a2489 322,365,471,473,546,591,1201,1238
+.hallmark/log.json
+  s_06728e279d0bbe::t_15357b94fff0cb 3-8
+src/components/LandingPage.tsx
+  s_06728e279d0bbe::t_15357b94fff0cb 18,25,32,39,133-136,138,140-145,147-148,150
+src/components/Editor.tsx
+  s_06728e279d0bbe::t_15357b94fff0cb 162,420
+static/_headers
+  s_06728e279d0bbe::t_15357b94fff0cb 1-17
+tokens.css
+  s_06728e279d0bbe::t_15357b94fff0cb 1,3-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "development:1.6.7",
+  "base_commit_sha": "f3a0f5009919c6f33f8bb783f307a6cf644ef6d1",
+  "branch": "main",
+  "prompts": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:79c00fdf703637677907d175a676450135c32d8b87d5b46ae3d9cb52c14276e2",
+      "total_additions": 144,
+      "total_deletions": 147,
+      "accepted_lines": 130,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:79c00fdf703637677907d175a676450135c32d8b87d5b46ae3d9cb52c14276e2",
+      "stats": {
+        "total_additions": 144,
+        "total_deletions": 147,
+        "accepted_lines": 130,
+        "overriden_lines": 0,
+        "files": {
+          ".dev.vars": {
+            "total_additions": 0,
+            "total_deletions": 0,
+            "accepted_lines": 1,
+            "overriden_lines": 0
+          },
+          ".hallmark/log.json": {
+            "total_additions": 7,
+            "total_deletions": 0,
+            "accepted_lines": 7,
+            "overriden_lines": 0
+          },
+          "src/components/Editor.tsx": {
+            "total_additions": 2,
+            "total_deletions": 3,
+            "accepted_lines": 2,
+            "overriden_lines": 0
+          },
+          "src/components/LandingPage.tsx": {
+            "total_additions": 19,
+            "total_deletions": 25,
+            "accepted_lines": 18,
+            "overriden_lines": 0
+          },
+          "src/index.css": {
+            "total_additions": 96,
+            "total_deletions": 116,
+            "accepted_lines": 82,
+            "overriden_lines": 0
+          },
+          "static/_headers": {
+            "total_additions": 17,
+            "total_deletions": 0,
+            "accepted_lines": 17,
+            "overriden_lines": 0
+          },
+          "tokens.css": {
+            "total_additions": 3,
+            "total_deletions": 3,
+            "accepted_lines": 3,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
