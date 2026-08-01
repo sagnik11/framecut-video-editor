@@ -4,7 +4,7 @@ Framecut is a focused, full-stack browser video editor for stop-motion animation
 
 The application runs on Cloudflare Workers, stores relational data in D1, stores source videos and exports in R2, and performs video rendering on the user's device with ffmpeg.wasm.
 
-> Sponsored by **Autter**.
+> Sponsored by [**Autter**](https://www.autter.dev/).
 
 ## Features
 
@@ -45,6 +45,12 @@ Rendering runs in the browser so the Worker does not need a native FFmpeg proces
 - ffmpeg.wasm
 - Zod, Phosphor Icons, Oxlint, and Vitest
 
+## Product and brand design
+
+The interface uses a Hallmark-designed **Workbench / Hum** system for casual creators: the landing page gets users to the editor quickly, while the editing surface stays compact and exact. Shared type, color, spacing, motion, and accessibility values live in `tokens.css`; component styling lives in `src/index.css`.
+
+Framecut uses Autter's official light and dark wordmarks in linked sponsorship credits. Every visible sponsor mark points to [autter.dev](https://www.autter.dev/), and the vendored image files live in `static/`. The MIT license covers this repository's code; it does not grant rights to third-party names or marks.
+
 ## Requirements
 
 - Node.js 22 or newer
@@ -57,8 +63,8 @@ Rendering runs in the browser so the Worker does not need a native FFmpeg proces
 1. Clone and install dependencies.
 
    ```bash
-   git clone https://github.com/sagnik11/autter-video-editor.git
-   cd autter-video-editor
+   git clone https://github.com/sagnik11/framecut-video-editor.git
+   cd framecut-video-editor
    npm install
    ```
 
@@ -194,4 +200,4 @@ MIT. See [LICENSE](LICENSE).
 
 ## Sponsorship
 
-Framecut is sponsored by **Autter**. Please retain the unobtrusive sponsorship credit when redistributing the hosted product.
+Framecut is sponsored by [**Autter**](https://www.autter.dev/). Please retain the linked, unobtrusive sponsorship credit when redistributing the hosted product.

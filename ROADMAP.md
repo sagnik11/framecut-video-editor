@@ -4,6 +4,8 @@ Framecut's core product scope remains deliberately narrow: stop motion, trim, cr
 
 Before starting an item, open a GitHub issue describing the intended user flow and technical approach. Keep each pull request focused on one roadmap item.
 
+If you are new to the project, start with **editor keyboard shortcuts**, **reusable export presets**, or **improved empty and error states**. Each can ship independently without changing the Cloudflare data model or rendering architecture.
+
 ## Good first issues
 
 ### Add editor keyboard shortcuts

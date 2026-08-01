@@ -16,6 +16,7 @@ import { formatBytes, formatDuration } from "../lib/format";
 import { navigate } from "../lib/navigation";
 import { browserRenderer } from "../lib/renderer";
 import { createVideoThumbnails, readVideoMetadata } from "../lib/video";
+import { AutterMark } from "./AutterMark";
 import { Brand } from "./Brand";
 import { Inspector } from "./Inspector";
 import { LoadingView } from "./LoadingView";
@@ -301,7 +302,7 @@ export function Editor({ projectId }: { projectId: string }) {
         </div>
         <div className="editor-header-right">
           {upload.active ? <span className="cloud-status"><CloudArrowUpIcon /> Uploading {upload.progress}%</span> : project.sourceReady ? <span className="cloud-status saved"><CheckCircleIcon weight="fill" /> Saved</span> : null}
-          <span className="autter-chip">Sponsored by <strong>AUTTER</strong></span>
+          <AutterMark compact />
           <ThemeToggle />
           <button className="button primary" type="button" onClick={() => void renderVideo()} disabled={!sourceUrl || exporting}><DownloadSimpleIcon /> Export</button>
         </div>

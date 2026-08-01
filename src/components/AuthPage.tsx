@@ -3,6 +3,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { authClient } from "../lib/auth-client";
 import { navigate } from "../lib/navigation";
+import { AutterMark } from "./AutterMark";
 import { Brand } from "./Brand";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -43,22 +44,29 @@ export function AuthPage({ mode }: { mode: "sign-in" | "sign-up" }) {
         <button className="text-button" type="button" onClick={() => navigate("/")}><ArrowLeftIcon /> Home</button>
         <ThemeToggle />
       </header>
-      <section className="auth-panel">
-        <Brand />
-        <div className="auth-copy">
-          <h1>{signingUp ? "Create your workspace" : "Welcome back"}</h1>
-          <p>{signingUp ? "Save source files, edits, and exports to your Cloudflare-backed account." : "Sign in to continue editing your projects."}</p>
-        </div>
-        <form onSubmit={submit} noValidate>
+      <div className="auth-layout">
+        <aside className="auth-context">
+          <p className="eyebrow"><span>Framecut account</span> Private workspace</p>
+          <h1>Your next cut starts here.</h1>
+          <p>A quick account, then straight to the fun part. Render on your device and save only what you want.</p>
+          <AutterMark label="Made possible by" />
+        </aside>
+        <section className="auth-panel">
+          <Brand compact />
+          <div className="auth-copy">
+            <h2>{signingUp ? "Let’s make something" : "Welcome back"}</h2>
+            <p>{signingUp ? "Three quick fields, then your first Framecut project is ready." : "Sign in and jump back into your projects."}</p>
+          </div>
+          <form onSubmit={submit} noValidate aria-describedby="auth-error">
           {signingUp && (
             <label>
               <span>Name</span>
-              <input value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" minLength={2} maxLength={80} required />
+              <input value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" minLength={2} maxLength={80} required aria-invalid={Boolean(error)} />
             </label>
           )}
           <label>
             <span>Email address</span>
-            <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required />
+            <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required aria-invalid={Boolean(error)} />
           </label>
           <label>
             <span>Password</span>
@@ -71,6 +79,7 @@ export function AuthPage({ mode }: { mode: "sign-in" | "sign-up" }) {
                 minLength={8}
                 maxLength={128}
                 required
+                aria-invalid={Boolean(error)}
               />
               <button type="button" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? "Hide password" : "Show password"}>
                 {showPassword ? <EyeSlashIcon /> : <EyeIcon />}
@@ -78,8 +87,8 @@ export function AuthPage({ mode }: { mode: "sign-in" | "sign-up" }) {
             </span>
             {signingUp && <small>Use at least 8 characters.</small>}
           </label>
-          {error && <p className="form-error" role="alert">{error}</p>}
-          <button className="button primary auth-submit" type="submit" disabled={pending}>
+          <p className={`form-error ${error ? "" : "is-empty"}`} id="auth-error" aria-live="polite">{error || "No errors"}</p>
+          <button className="button primary auth-submit" type="submit" disabled={pending} data-state={pending ? "loading" : undefined} aria-busy={pending}>
             {pending ? "Please wait..." : signingUp ? "Create account" : "Sign in"}
           </button>
         </form>
@@ -89,7 +98,8 @@ export function AuthPage({ mode }: { mode: "sign-in" | "sign-up" }) {
             {signingUp ? "Sign in" : "Create account"}
           </button>
         </p>
-      </section>
+        </section>
+      </div>
     </main>
   );
 }

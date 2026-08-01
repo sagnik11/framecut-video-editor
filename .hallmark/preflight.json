@@ -1,0 +1,14 @@
+{
+  "date": "2026-08-01",
+  "font_stack": "Avenir Next with SF Mono",
+  "palette": "warm neutrals with terracotta accent",
+  "motion": "motion-cut",
+  "spacing": "compact, no prior named scale",
+  "framework": "React 19 with Vite and TypeScript",
+  "preserve": [
+    "product routes and functionality",
+    "Autter sponsorship",
+    "compact editor density",
+    "warm brand direction"
+  ]
+}
