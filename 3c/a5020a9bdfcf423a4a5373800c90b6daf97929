@@ -1,0 +1,171 @@
+src/components/AuthPage.tsx
+  s_06728e279d0bbe::t_06e535bb7f477a 6,47-49,52-56,59,64,69,82,91,101-102
+  s_06728e279d0bbe::t_47f8de65a27276 60,90
+  s_06728e279d0bbe::t_daa71dd202da34 50-51,57-58
+src/components/Brand.tsx
+  s_06728e279d0bbe::t_06e535bb7f477a 2,9
+.hallmark/preflight.json
+  s_06728e279d0bbe::t_8d96ede494baf3 1-14
+.hallmark/log.json
+  s_06728e279d0bbe::t_daa71dd202da34 5,7
+  s_06728e279d0bbe::t_8d96ede494baf3 1-4,6,8-9
+src/components/Editor.tsx
+  s_06728e279d0bbe::t_06e535bb7f477a 19,305
+index.html
+  s_06728e279d0bbe::t_06e535bb7f477a 5
+src/components/LandingPage.tsx
+  s_06728e279d0bbe::t_06e535bb7f477a 8,13-19,21-26,28-33,35-40,42-44,47-48,52,54-55,59,66,71-72,74,76-77,80,82-92,94-95,98-99,102-106,109-135,139-150,153-155,158,160-163,174-178,180-181,183,185-186
+  s_06728e279d0bbe::t_daa71dd202da34 20,27,34,41,60,68-70,73,75,78-79,93,100-101,107-108,136-138,156,159,169-173,182,184
+package.json
+  s_06728e279d0bbe::t_06e535bb7f477a 2
+src/components/AutterMark.tsx
+  s_06728e279d0bbe::t_06e535bb7f477a 1-22
+README.md
+  s_06728e279d0bbe::t_e86dd04dc32f6c 48-53
+  s_06728e279d0bbe::t_06e535bb7f477a 7,66-67,203
+src/components/ThemeToggle.tsx
+  s_06728e279d0bbe::t_daa71dd202da34 9
+tokens.css
+  s_06728e279d0bbe::t_8d96ede494baf3 7-14,33-63,65-110,124,128-138,152,156-164
+  s_06728e279d0bbe::t_47f8de65a27276 5-6,21,117,145
+  s_06728e279d0bbe::t_daa71dd202da34 1-4,15-20,22-32,64,111-116,118-123,125-127,139-144,146-151,153-155
+src/index.css
+  s_06728e279d0bbe::t_77f40740dd4f77 50,250,390,603,619,741,835
+  s_06728e279d0bbe::t_6e7176777208b7 554,685,1134-1138,1141-1144,1165,1217-1218,1266-1268
+  s_06728e279d0bbe::t_7c78952d9ec84c 649
+  s_06728e279d0bbe::t_47f8de65a27276 44,61,65,364,697,732-733,738,755-756,822,908,1151-1152,1200,1207,1212,1232,1236-1238,1244-1252,1269-1273
+  s_06728e279d0bbe::t_f2607637756991 63-64,113-115,167,251,255,257-259,261-262,267,297-298,312,321,325,357-363,365-368,370-375,384,387-389,391,401-402,411-437,440-445,450-452,456,505,557-560,568-571,574,581-582,591,595-602,604-609,612-618,620-631,658
+  s_06728e279d0bbe::t_47d51297ea7de9 1-16,18-19,25-28,30-35,39-43,45-49,51-60,62,66-77,89-92,96-100,102,105-112,116-120,122-123,126-127,129-130,136-166,168-249,252-254,256,260,263-266,268-296,299-311,313-320,322-324,326-356,369,376-383,385-386,392-400,403-410,438-439,446-449,453-455,457-504,506-553,555-556,561-567,572-573,575-580,583-590,592-594,610-611,632-648,650-657,659-673,675-684,686-687,689-696,698-731,735,737,739,742-754,758-759,761,763-821,823-834,836-889,892-904,906-907,911-936,938-956,958-1043,1045-1053,1055-1057,1059-1063,1065,1067-1086,1089-1094,1096-1133,1145-1150,1153-1164,1166-1199,1201-1206,1208-1211,1213-1216,1219-1231,1233-1235,1239-1243,1255-1256,1258-1265
+ROADMAP.md
+  s_06728e279d0bbe::t_e86dd04dc32f6c 7-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "development:1.6.7",
+  "base_commit_sha": "3ca5020a9bdfcf423a4a5373800c90b6daf97929",
+  "branch": "main",
+  "prompts": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:a45070c1eb3f2b73cc3862d814bf51398a3248185e332c14cd021c240f2e638b",
+      "total_additions": 1774,
+      "total_deletions": 624,
+      "accepted_lines": 1613,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:a45070c1eb3f2b73cc3862d814bf51398a3248185e332c14cd021c240f2e638b",
+      "stats": {
+        "total_additions": 1774,
+        "total_deletions": 624,
+        "accepted_lines": 1613,
+        "overriden_lines": 0,
+        "files": {
+          ".dev.vars": {
+            "total_additions": 0,
+            "total_deletions": 0,
+            "accepted_lines": 1,
+            "overriden_lines": 0
+          },
+          ".hallmark/log.json": {
+            "total_additions": 11,
+            "total_deletions": 2,
+            "accepted_lines": 9,
+            "overriden_lines": 0
+          },
+          ".hallmark/preflight.json": {
+            "total_additions": 14,
+            "total_deletions": 0,
+            "accepted_lines": 14,
+            "overriden_lines": 0
+          },
+          "README.md": {
+            "total_additions": 10,
+            "total_deletions": 4,
+            "accepted_lines": 10,
+            "overriden_lines": 0
+          },
+          "ROADMAP.md": {
+            "total_additions": 2,
+            "total_deletions": 0,
+            "accepted_lines": 2,
+            "overriden_lines": 0
+          },
+          "index.html": {
+            "total_additions": 2,
+            "total_deletions": 3,
+            "accepted_lines": 1,
+            "overriden_lines": 0
+          },
+          "package.json": {
+            "total_additions": 1,
+            "total_deletions": 1,
+            "accepted_lines": 1,
+            "overriden_lines": 0
+          },
+          "src/components/AuthPage.tsx": {
+            "total_additions": 28,
+            "total_deletions": 18,
+            "accepted_lines": 22,
+            "overriden_lines": 0
+          },
+          "src/components/AutterMark.tsx": {
+            "total_additions": 22,
+            "total_deletions": 0,
+            "accepted_lines": 22,
+            "overriden_lines": 0
+          },
+          "src/components/Brand.tsx": {
+            "total_additions": 2,
+            "total_deletions": 1,
+            "accepted_lines": 2,
+            "overriden_lines": 0
+          },
+          "src/components/Editor.tsx": {
+            "total_additions": 2,
+            "total_deletions": 1,
+            "accepted_lines": 2,
+            "overriden_lines": 0
+          },
+          "src/components/LandingPage.tsx": {
+            "total_additions": 173,
+            "total_deletions": 84,
+            "accepted_lines": 148,
+            "overriden_lines": 0
+          },
+          "src/components/ThemeToggle.tsx": {
+            "total_additions": 1,
+            "total_deletions": 1,
+            "accepted_lines": 1,
+            "overriden_lines": 0
+          },
+          "src/index.css": {
+            "total_additions": 1294,
+            "total_deletions": 461,
+            "accepted_lines": 1214,
+            "overriden_lines": 0
+          },
+          "tokens.css": {
+            "total_additions": 212,
+            "total_deletions": 48,
+            "accepted_lines": 164,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
