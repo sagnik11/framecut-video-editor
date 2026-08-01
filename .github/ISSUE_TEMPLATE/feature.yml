@@ -1,0 +1,47 @@
+name: Roadmap feature
+description: Propose or claim a focused Framecut roadmap item.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: dropdown
+    id: roadmap
+    attributes:
+      label: Roadmap item
+      options:
+        - Editor keyboard shortcuts
+        - Reusable export presets
+        - Empty and error states
+        - Resumable multipart uploads
+        - Storage usage and retention
+        - Account recovery and email verification
+        - End-to-end browser tests
+        - Accessible timeline refinement
+        - WebCodecs acceleration
+        - Offline project workspace
+        - Optional server render jobs
+        - Portable project manifest
+    validations:
+      required: true
+  - type: textarea
+    id: user-flow
+    attributes:
+      label: User flow
+      description: Describe the smallest complete user experience this change will add.
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: Technical approach
+      description: Note the components, Worker routes, D1 changes, or R2 behavior involved.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Scope check
+      options:
+        - label: I reviewed ROADMAP.md and will keep this change focused on one item.
+          required: true
+        - label: I will preserve project ownership checks and private R2 access.
+          required: true
