@@ -1,0 +1,55 @@
+.github/workflows/ci.yml
+  s_06728e279d0bbe::t_0ab58f11c7106e 16-17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "autter_version": "development:1.6.7",
+  "base_commit_sha": "c0b265b829a13e50d2f0aba8925d85f8cda23529",
+  "branch": "main",
+  "prompts": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:f165ad01115af26dccf1620f603e753e026cd855297c0a120a65fa07774d6089",
+      "total_additions": 2,
+      "total_deletions": 2,
+      "accepted_lines": 3,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_06728e279d0bbe": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faf43-4759-7502-918f-0f9e870b30a8",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Sagnik Ghosh <sagnik@worqhat.com>",
+      "messages_url": "cas:f165ad01115af26dccf1620f603e753e026cd855297c0a120a65fa07774d6089",
+      "stats": {
+        "total_additions": 2,
+        "total_deletions": 2,
+        "accepted_lines": 3,
+        "overriden_lines": 0,
+        "files": {
+          ".dev.vars": {
+            "total_additions": 0,
+            "total_deletions": 0,
+            "accepted_lines": 1,
+            "overriden_lines": 0
+          },
+          ".github/workflows/ci.yml": {
+            "total_additions": 2,
+            "total_deletions": 2,
+            "accepted_lines": 2,
+            "overriden_lines": 0
+          }
+        }
+      }
+    }
+  }
+}
