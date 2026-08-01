@@ -18,6 +18,17 @@ export type EditorSettings = {
   crop: CropSettings;
 };
 
+export type ProjectClip = {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  duration: number;
+  width: number;
+  height: number;
+  position: number;
+};
+
 export type Project = {
   id: string;
   name: string;
@@ -27,6 +38,7 @@ export type Project = {
   sourceName: string | null;
   sourceType: string | null;
   sourceSize: number | null;
+  clips: ProjectClip[];
   duration: number | null;
   width: number | null;
   height: number | null;

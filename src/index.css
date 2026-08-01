@@ -1121,6 +1121,15 @@ input[type="range"] { width: 100%; height: var(--space-2xs); margin: 0; accent-c
 .play-button { width: 2.75rem; height: 2.75rem; padding: 0; border: 0; border-radius: var(--radius-pill); display: grid; place-items: center; background: var(--text); color: var(--surface); cursor: pointer; }
 .timecode { display: none; margin-left: var(--space-xs); color: var(--text-faint); font-family: var(--font-mono); font-size: var(--text-xs); }
 .timecode strong { color: var(--text); }
+.timeline-toolbar-actions { min-width: 0; display: flex; align-items: center; gap: var(--space-2xs); }
+.timeline-add-button,
+.timeline-remove-button { height: 2.25rem; border: var(--rule-hair) solid var(--line-strong); border-radius: var(--radius-xs); display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2xs); background: var(--surface-raised); color: var(--text); font: inherit; font-size: var(--text-xs); cursor: pointer; }
+.timeline-add-button { padding: 0 var(--space-sm); color: var(--accent-strong); }
+.timeline-remove-button { width: 2.25rem; padding: 0; }
+.timeline-add-button:hover:not(:disabled),
+.timeline-remove-button:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+.timeline-add-button:disabled,
+.timeline-remove-button:disabled { opacity: 0.42; cursor: not-allowed; }
 .timeline-zoom { width: 6.25rem; display: flex; align-items: center; gap: var(--space-2xs); color: var(--text-faint); font-size: var(--text-xs); }
 .timeline-scroll { min-width: 0; overflow-x: auto; overflow-y: clip; background: var(--surface-muted); }
 .timeline-track { position: relative; height: 100%; min-height: 12.75rem; user-select: none; touch-action: none; }
@@ -1128,7 +1137,12 @@ input[type="range"] { width: 100%; height: var(--space-2xs); margin: 0; accent-c
 .timeline-ruler span { position: absolute; top: var(--space-2xs); color: var(--text-faint); font-family: var(--font-mono); font-size: var(--text-xs); transform: translateX(-1px); }
 .timeline-ruler i { width: var(--rule-hair); height: 0.375rem; margin-bottom: var(--space-3xs); display: block; background: var(--line-strong); }
 .timeline-lane { position: absolute; top: 2.625rem; right: 0; left: 0; height: 6rem; background: color-mix(in oklch, var(--surface) 55%, transparent); }
-.timeline-clip { position: absolute; top: var(--space-2xs); bottom: var(--space-2xs); min-width: var(--space-xs); border: 2px solid var(--accent); border-radius: var(--radius-sm); overflow: visible; background: var(--surface-raised); box-shadow: var(--shadow-whisper); }
+.timeline-source-clip { position: absolute; top: var(--space-2xs); bottom: var(--space-2xs); min-width: var(--space-xs); border: 2px solid var(--line-strong); border-radius: var(--radius-sm); overflow: clip; background: var(--surface-raised); box-shadow: var(--shadow-whisper); }
+.timeline-source-clip + .timeline-source-clip { border-left-color: var(--surface); }
+.timeline-source-clip[data-selected="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 var(--rule-hair) var(--accent), var(--shadow-whisper); }
+.timeline-clip-label { position: absolute; z-index: 1; top: var(--space-3xs); left: var(--space-2xs); max-width: calc(100% - var(--space-xs)); padding: 0.125rem var(--space-2xs); overflow: hidden; border-radius: var(--radius-xs); background: color-mix(in oklch, var(--color-frame) 78%, transparent); color: white; font-family: var(--font-mono); font-size: 0.625rem; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; pointer-events: none; }
+.timeline-trim-window { position: absolute; z-index: var(--z-raised); top: var(--space-2xs); bottom: var(--space-2xs); min-width: var(--space-xs); border-top: 2px solid var(--accent); border-bottom: 2px solid var(--accent); pointer-events: none; }
+.timeline-trim-window .trim-handle { pointer-events: auto; }
 .timeline-active-segment { position: absolute; z-index: var(--z-base); top: var(--space-2xs); bottom: var(--space-2xs); border: 2px solid var(--color-cyan); background: color-mix(in oklch, var(--color-cyan) 16%, transparent); box-shadow: inset 0 0 0 var(--rule-hair) color-mix(in oklch, var(--surface-raised) 70%, transparent); pointer-events: none; }
 .timeline-split-marker { position: absolute; z-index: var(--z-raised); top: -0.375rem; bottom: -0.375rem; width: 1.5rem; padding: 0; border: 0; background: transparent; color: var(--accent-strong); cursor: pointer; transform: translateX(-50%); }
 .timeline-split-marker::after { position: absolute; top: 0.875rem; bottom: 0; left: calc(50% - 1px); width: 2px; background: var(--accent-strong); box-shadow: 0 0 0 var(--rule-hair) color-mix(in oklch, var(--surface-raised) 72%, transparent); content: ""; }

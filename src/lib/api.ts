@@ -55,6 +55,14 @@ export const api = {
   async deleteProject(id: string): Promise<void> {
     await request<void>(`/api/projects/${id}`, { method: "DELETE" });
   },
+
+  async deleteClip(projectId: string, clipId: string): Promise<Project> {
+    const data = await request<{ project: Project }>(
+      `/api/projects/${projectId}/clips/${encodeURIComponent(clipId)}`,
+      { method: "DELETE" },
+    );
+    return data.project;
+  },
 };
 
 type UploadOptions = {
@@ -62,7 +70,7 @@ type UploadOptions = {
   blob: Blob;
   fileName: string;
   contentType: string;
-  kind: "source" | "export";
+  kind: "source" | "clip" | "export";
   metadata?: SourceMetadata;
   onProgress?: (progress: number) => void;
   signal?: AbortSignal;
@@ -72,7 +80,7 @@ const PART_SIZE = 8 * 1024 * 1024;
 
 export async function uploadMedia(options: UploadOptions): Promise<Project> {
   const { projectId, blob, fileName, contentType, kind, metadata, onProgress, signal } = options;
-  const started = await request<{ key: string; uploadId: string }>(`/api/projects/${projectId}/uploads`, {
+  const started = await request<{ key: string; uploadId: string; clipId?: string }>(`/api/projects/${projectId}/uploads`, {
     method: "POST",
     body: JSON.stringify({ kind, fileName, contentType, size: blob.size }),
     signal,
@@ -105,6 +113,7 @@ export async function uploadMedia(options: UploadOptions): Promise<Project> {
           fileName,
           contentType,
           size: blob.size,
+          clipId: started.clipId,
           ...metadata,
         }),
         signal,

@@ -1,6 +1,6 @@
 # Framecut
 
-Framecut is a focused, full-stack browser video editor for stop-motion animation, splitting, compression, resizing, and cropping. It has an interactive thumbnail timeline, private accounts, persistent projects, multipart media uploads, and downloadable MP4 exports.
+Framecut is a focused, full-stack browser video editor for stop-motion animation, multi-video timelines, splitting, compression, resizing, and cropping. It has an interactive thumbnail timeline, private accounts, persistent projects, multipart media uploads, and downloadable MP4 exports.
 
 The application runs on Cloudflare Workers, stores relational data in D1, stores source videos and exports in R2, and performs video rendering on the user's device with ffmpeg.wasm.
 
@@ -13,7 +13,9 @@ The application runs on Cloudflare Workers, stores relational data in D1, stores
 - Source-video uploads to private R2 storage
 - Multipart uploads in 8 MiB parts for large files
 - Authenticated byte-range streaming for smooth seeking
-- Visual thumbnail timeline with playhead, zoom, and draggable trim handles
+- Append up to 20 videos to an existing project at any time, with ordered clip blocks and automatic gap closing when a clip is removed
+- Continuous multi-clip preview that crosses video boundaries while keeping one global playhead
+- Visual thumbnail timeline with per-video frames, playhead, zoom, and draggable trim handles
 - Non-destructive split points with part selection, per-part preview, and one-click individual MP4 downloads
 - Stop-motion frame-rate control from 1 to 24 fps, with a 4 fps default
 - Real-time stop-motion preview that holds frames at the selected cadence while source audio continues playing
@@ -114,7 +116,9 @@ For CI, authenticate Wrangler with scoped Cloudflare credentials and store `BETT
 
 ## Data model
 
-The migration at `migrations/0001_initial.sql` creates Better Auth's `user`, `session`, `account`, and `verification` tables plus the application `project` table. A project records:
+The migration at `migrations/0001_initial.sql` creates Better Auth's `user`, `session`, `account`, and `verification` tables plus the application `project` table. `migrations/0002_project_clips.sql` adds ordered appendable clips. Existing projects need no media rewrite: the original project source is exposed as Clip 1, and later clips live in `project_clip` rows.
+
+A project records:
 
 - ownership and project status
 - private R2 keys for its source and latest export
@@ -122,10 +126,13 @@ The migration at `migrations/0001_initial.sql` creates Better Auth's `user`, `se
 - JSON editor settings
 - creation and update timestamps
 
+Each appended clip records its project, private R2 key, order, filename, MIME type, size, duration, and dimensions. Removing Clip 1 promotes the next clip without re-uploading it. Deleting a project removes the original source, appended clips, and latest export from R2.
+
 R2 objects use this layout:
 
 ```text
 <user-id>/<project-id>/source/<random-id>.<ext>
+<user-id>/<project-id>/clips/<clip-id>.<ext>
 <user-id>/<project-id>/export/<random-id>.<ext>
 ```
 
@@ -133,10 +140,11 @@ Every project and media request verifies the active user's ownership. The R2 buc
 
 ## Rendering pipeline
 
-1. The editor downloads the authenticated source through the Worker's range-capable media route.
+1. The editor downloads each authenticated timeline clip through the Worker's range-capable media route.
 2. ffmpeg.wasm loads as a lazy client asset only when a render starts.
-3. The selected split part becomes the export range, then the command builder applies crop, resize/pad, stop-motion cadence, and H.264 compression in a single render.
-4. The resulting MP4 is exposed as a local download and uploaded to the project's private R2 export key.
+3. For multi-video projects, each clip is normalized to Clip 1's canvas and a consistent 30 fps H.264/AAC format. Silent clips receive a silent audio track so concatenation stays synchronized.
+4. The normalized clips are concatenated in timeline order. The selected split part becomes the export range, then the command builder applies crop, resize/pad, stop-motion cadence, and compression.
+5. The resulting MP4 is exposed as a local download and uploaded to the project's private R2 export key.
 
 Stop motion is produced by sampling at the selected cadence and holding each sampled frame through a 30 fps output stream. Audio is retained when present. Crop values are normalized in the UI and converted to even pixel dimensions for encoder compatibility.
 
@@ -169,7 +177,7 @@ CONTRIBUTING.md         Contribution workflow and engineering constraints
 
 ## Privacy and security notes
 
-- Video processing happens locally in the user's browser; only the source and finished export are stored in R2.
+- Video processing happens locally in the user's browser; only project source clips and finished exports are stored in R2.
 - Sessions use HTTP-only Better Auth cookies, secure cookies in HTTPS, and a five-minute cookie cache.
 - API responses containing account or project data use `Cache-Control: no-store`.
 - Upload keys include both the authenticated user and owned project, and keys are validated before multipart operations.
@@ -190,11 +198,11 @@ For large production workloads or mobile-first rendering, consider a future serv
 - **R2 upload fails locally**: restart `npm run dev` after changing bindings and confirm `.wrangler` is writable.
 - **Export reports that the video engine is not seeded**: run `npm run seed:ffmpeg:local` locally or `npm run seed:ffmpeg` for the remote bucket.
 - **Export is slow or the tab runs out of memory**: shorten the trim range, reduce output dimensions, increase compression, or use a desktop browser with more available memory.
-- **Video seeking fails after reload**: inspect the authenticated `/api/projects/:id/media/source` request and verify that the response includes range headers.
+- **Video seeking fails after reload**: inspect the authenticated `/api/projects/:id/clips/:clipId/media` request and verify that the response includes range headers.
 
 ## Contributing
 
-Core scope intentionally stays limited to stop motion, split, trim, crop, resize, compression, and export. See [ROADMAP.md](ROADMAP.md) for well-bounded extensions and [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
+Core scope intentionally stays limited to multi-video sequencing, stop motion, split, trim, crop, resize, compression, and export. See [ROADMAP.md](ROADMAP.md) for well-bounded extensions and [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 
 ## License
 

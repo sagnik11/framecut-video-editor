@@ -6,7 +6,7 @@ import {
   UploadSimpleIcon,
   WarningCircleIcon,
 } from "@phosphor-icons/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent, DragEvent, PointerEvent as ReactPointerEvent } from "react";
 import type { EditorSettings, Project } from "../types";
 import { defaultEditorSettings, normalizeSettings } from "../types";
@@ -16,6 +16,7 @@ import type { CropHandle } from "../lib/crop-interaction";
 import { formatBytes, formatDuration } from "../lib/format";
 import { navigate } from "../lib/navigation";
 import { browserRenderer } from "../lib/renderer";
+import { buildClipTimeline, clipLocalTime, findTimelineClipIndex } from "../lib/clip-timeline";
 import { getStopMotionFrameIndex } from "../lib/stop-motion-preview";
 import { createVideoThumbnails, readVideoMetadata } from "../lib/video";
 import { getSegmentIndexAtTime, getVideoSegments, normalizeSplitPoints } from "../lib/video-split";
@@ -48,7 +49,8 @@ export function Editor({ projectId }: { projectId: string }) {
   const [localUrl, setLocalUrl] = useState("");
   const [settings, setSettings] = useState<EditorSettings>(() => defaultEditorSettings());
   const [settingsReady, setSettingsReady] = useState(false);
-  const [thumbnails, setThumbnails] = useState<string[]>([]);
+  const [thumbnails, setThumbnails] = useState<Record<string, string[]>>({});
+  const [activeClipIndex, setActiveClipIndex] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [activeSegmentIndex, setActiveSegmentIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -65,13 +67,33 @@ export function Editor({ projectId }: { projectId: string }) {
   const cropDragRef = useRef<CropDrag | null>(null);
   const [activeCropDrag, setActiveCropDrag] = useState<CropDrag["handle"] | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const appendInputRef = useRef<HTMLInputElement>(null);
   const exportAbortRef = useRef<AbortController | null>(null);
   const resultUrlRef = useRef("");
+  const pendingSeekRef = useRef<number | null>(null);
+  const autoPlayAfterLoadRef = useRef(false);
 
   const sourceWidth = project?.width ?? settings.crop.width ?? 1920;
   const sourceHeight = project?.height ?? settings.crop.height ?? 1080;
   const sourceDuration = project?.duration ?? settings.trim.end ?? 0;
-  const sourceUrl = localUrl || (project?.sourceReady ? `/api/projects/${projectId}/media/source` : "");
+  const timelineClips = useMemo(() => {
+    const clips = project?.clips.length
+      ? project.clips
+      : localFile && project
+        ? [{
+            id: "source", name: localFile.name, type: localFile.type || "video/mp4", size: localFile.size,
+            duration: project.duration ?? 0, width: project.width ?? 1920, height: project.height ?? 1080, position: 0,
+          }]
+        : [];
+    return buildClipTimeline(clips);
+  }, [localFile, project]);
+  const selectedClipIndex = Math.min(activeClipIndex, Math.max(0, timelineClips.length - 1));
+  const activeClip = timelineClips[selectedClipIndex];
+  const sourceUrl = activeClip
+    ? activeClip.id === "source" && localUrl
+      ? localUrl
+      : `/api/projects/${projectId}/clips/${encodeURIComponent(activeClip.id)}/media`
+    : "";
   const segments = getVideoSegments(settings.trim.start, settings.trim.end, settings.split.points);
   const selectedSegmentIndex = Math.min(activeSegmentIndex, Math.max(0, segments.length - 1));
   const activeSegment = segments[selectedSegmentIndex] ?? { index: 0, start: settings.trim.start, end: settings.trim.end, duration: settings.trim.end - settings.trim.start };
@@ -81,12 +103,13 @@ export function Editor({ projectId }: { projectId: string }) {
     const canvas = previewCanvasRef.current;
     if (!settings.stopMotion.enabled || !video || !canvas || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
 
-    const frameIndex = getStopMotionFrameIndex(video.currentTime, activeSegment.start, settings.stopMotion.fps);
+    const timelineTime = (activeClip?.start ?? 0) + video.currentTime;
+    const frameIndex = getStopMotionFrameIndex(timelineTime, activeSegment.start, settings.stopMotion.fps);
     if (!force && frameIndex === previewFrameIndexRef.current) return;
 
-    const width = video.videoWidth;
-    const height = video.videoHeight;
-    if (!width || !height) return;
+    const width = sourceWidth;
+    const height = sourceHeight;
+    if (!width || !height || !video.videoWidth || !video.videoHeight) return;
 
     if (canvas.width !== width || canvas.height !== height) {
       canvas.width = width;
@@ -95,11 +118,16 @@ export function Editor({ projectId }: { projectId: string }) {
 
     const context = canvas.getContext("2d", { alpha: false });
     if (!context) return;
-    context.drawImage(video, 0, 0, width, height);
+    const scale = Math.min(width / video.videoWidth, height / video.videoHeight);
+    const drawWidth = video.videoWidth * scale;
+    const drawHeight = video.videoHeight * scale;
+    context.fillStyle = "#050505";
+    context.fillRect(0, 0, width, height);
+    context.drawImage(video, (width - drawWidth) / 2, (height - drawHeight) / 2, drawWidth, drawHeight);
     previewFrameIndexRef.current = frameIndex;
     canvas.dataset.frameIndex = String(frameIndex);
     canvas.dataset.previewFps = String(settings.stopMotion.fps);
-  }, [activeSegment.start, settings.stopMotion.enabled, settings.stopMotion.fps]);
+  }, [activeClip?.start, activeSegment.start, settings.stopMotion.enabled, settings.stopMotion.fps, sourceHeight, sourceWidth]);
 
   const loadProject = useCallback(async () => {
     setLoading(true);
@@ -113,6 +141,7 @@ export function Editor({ projectId }: { projectId: string }) {
       setSettings(nextSettings);
       setCurrentTime(nextSettings.trim.start);
       setActiveSegmentIndex(0);
+      setActiveClipIndex(0);
       setSettingsReady(true);
       setFatalError("");
     } catch (caught) {
@@ -135,17 +164,26 @@ export function Editor({ projectId }: { projectId: string }) {
   }, [localFile]);
 
   useEffect(() => {
-    if (!sourceUrl || !sourceDuration) {
-      setThumbnails([]);
+    if (!project?.sourceReady || timelineClips.length === 0) {
+      setThumbnails({});
       return;
     }
     let cancelled = false;
-    setThumbnails([]);
-    void createVideoThumbnails(sourceUrl, sourceDuration)
-      .then((images) => { if (!cancelled) setThumbnails(images); })
-      .catch(() => { if (!cancelled) setThumbnails([]); });
+    setThumbnails({});
+    void Promise.all(timelineClips.map(async (clip) => {
+      const url = clip.id === "source" && localUrl
+        ? localUrl
+        : `/api/projects/${projectId}/clips/${encodeURIComponent(clip.id)}/media`;
+      try {
+        return [clip.id, await createVideoThumbnails(url, clip.duration, 4)] as const;
+      } catch {
+        return [clip.id, []] as const;
+      }
+    })).then((entries) => {
+      if (!cancelled) setThumbnails(Object.fromEntries(entries));
+    });
     return () => { cancelled = true; };
-  }, [sourceDuration, sourceUrl]);
+  }, [localUrl, project?.sourceReady, projectId, timelineClips]);
 
   useEffect(() => {
     const canvas = previewCanvasRef.current;
@@ -201,7 +239,7 @@ export function Editor({ projectId }: { projectId: string }) {
       setSettingsReady(true);
       setCurrentTime(0);
       setActiveSegmentIndex(0);
-      setThumbnails([]);
+      setThumbnails({});
 
       const prepared = await api.updateProject(projectId, {
         duration: metadata.duration,
@@ -221,6 +259,7 @@ export function Editor({ projectId }: { projectId: string }) {
         onProgress: (progress) => setUpload({ active: true, progress, error: "" }),
       });
       setProject(uploaded);
+      setActiveClipIndex(0);
       setUpload({ active: false, progress: 100, error: "" });
       setNotice("Source video saved to your project.");
     } catch (caught) {
@@ -234,17 +273,122 @@ export function Editor({ projectId }: { projectId: string }) {
     event.target.value = "";
   }
 
+  async function appendFiles(files: File[]) {
+    if (!project?.sourceReady || files.length === 0 || upload.active) return;
+    const remaining = 20 - timelineClips.length;
+    const selected = files.slice(0, remaining);
+    if (selected.length === 0) {
+      setNotice("A timeline can contain up to 20 videos.");
+      return;
+    }
+    const invalid = selected.find((file) => !file.type.startsWith("video/") && !/\.(mov|mp4|m4v|webm|avi|mkv)$/i.test(file.name));
+    if (invalid) {
+      setUpload({ active: false, progress: 0, error: `${invalid.name} is not a supported video.` });
+      return;
+    }
+
+    setUpload({ active: true, progress: 0, error: "" });
+    setNotice("");
+    try {
+      let updatedProject = project;
+      for (let index = 0; index < selected.length; index += 1) {
+        const file = selected[index];
+        const metadata = await readVideoMetadata(file);
+        if (!metadata.duration || !metadata.width || !metadata.height) throw new Error(`${file.name} metadata could not be read.`);
+        updatedProject = await uploadMedia({
+          projectId,
+          blob: file,
+          fileName: file.name,
+          contentType: file.type || "video/mp4",
+          kind: "clip",
+          metadata,
+          onProgress: (progress) => setUpload({
+            active: true,
+            progress: Math.round(((index + progress / 100) / selected.length) * 100),
+            error: "",
+          }),
+        });
+        setProject(updatedProject);
+      }
+
+      const duration = updatedProject.duration ?? 0;
+      const nextSettings = normalizeSettings({
+        ...settings,
+        trim: { start: settings.trim.start, end: duration },
+      }, duration, sourceWidth, sourceHeight);
+      updatedProject = await api.updateProject(projectId, { settings: nextSettings });
+      const nextTimeline = buildClipTimeline(updatedProject.clips);
+      const lastIndex = Math.max(0, nextTimeline.length - 1);
+      setProject(updatedProject);
+      setSettings(nextSettings);
+      setActiveClipIndex(lastIndex);
+      setCurrentTime(nextTimeline[lastIndex]?.start ?? 0);
+      pendingSeekRef.current = 0;
+      setUpload({ active: false, progress: 100, error: "" });
+      setNotice(`${selected.length} ${selected.length === 1 ? "video" : "videos"} added to the end of the timeline.`);
+    } catch (caught) {
+      setUpload({ active: false, progress: 0, error: caught instanceof Error ? caught.message : "The video could not be added." });
+    }
+  }
+
+  function onAppendInput(event: ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(event.target.files ?? []);
+    if (files.length > 0) void appendFiles(files);
+    event.target.value = "";
+  }
+
+  async function removeActiveClip() {
+    if (!project || !activeClip || timelineClips.length <= 1 || upload.active) return;
+    if (!window.confirm(`Remove “${activeClip.name}” from this timeline?`)) return;
+    videoRef.current?.pause();
+    setUpload({ active: true, progress: 0, error: "" });
+    try {
+      const removedLocalSource = activeClip.id === "source" && Boolean(localFile);
+      let updated = await api.deleteClip(project.id, activeClip.id);
+      const duration = updated.duration ?? 0;
+      const nextSettings = normalizeSettings({
+        ...settings,
+        trim: { start: Math.min(settings.trim.start, duration), end: duration },
+      }, duration, updated.width ?? sourceWidth, updated.height ?? sourceHeight);
+      updated = await api.updateProject(project.id, { settings: nextSettings });
+      const nextTimeline = buildClipTimeline(updated.clips);
+      const nextIndex = Math.min(selectedClipIndex, Math.max(0, nextTimeline.length - 1));
+      setProject(updated);
+      if (removedLocalSource) setLocalFile(null);
+      setSettings(nextSettings);
+      setActiveClipIndex(nextIndex);
+      setCurrentTime(nextTimeline[nextIndex]?.start ?? 0);
+      pendingSeekRef.current = 0;
+      setUpload({ active: false, progress: 100, error: "" });
+      setNotice("Video removed. The remaining clips closed the gap.");
+    } catch (caught) {
+      setUpload({ active: false, progress: 0, error: caught instanceof Error ? caught.message : "The video could not be removed." });
+    }
+  }
+
   function onDrop(event: DragEvent<HTMLDivElement>) {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file) void attachFile(file);
   }
 
-  function seek(time: number) {
+  function seek(time: number, playAfterSeek?: boolean) {
     const bounded = Math.max(0, Math.min(sourceDuration, time));
+    const clipIndex = findTimelineClipIndex(timelineClips, bounded);
+    const clip = timelineClips[clipIndex];
+    const localTime = clip ? clipLocalTime(clip, bounded) : bounded;
+    const shouldPlay = playAfterSeek ?? Boolean(videoRef.current && !videoRef.current.paused);
     setActiveSegmentIndex(getSegmentIndexAtTime(segments, bounded));
     setCurrentTime(bounded);
-    if (videoRef.current) videoRef.current.currentTime = bounded;
+    if (clipIndex !== selectedClipIndex) {
+      pendingSeekRef.current = localTime;
+      autoPlayAfterLoadRef.current = shouldPlay;
+      videoRef.current?.pause();
+      setActiveClipIndex(clipIndex);
+    } else if (videoRef.current) {
+      videoRef.current.currentTime = localTime;
+      if (shouldPlay) void videoRef.current.play().catch(() => undefined);
+    }
   }
 
   function selectSegment(index: number) {
@@ -252,8 +396,7 @@ export function Editor({ projectId }: { projectId: string }) {
     if (!segment) return;
     videoRef.current?.pause();
     setActiveSegmentIndex(segment.index);
-    setCurrentTime(segment.start);
-    if (videoRef.current) videoRef.current.currentTime = segment.start;
+    seek(segment.start, false);
   }
 
   function splitAtPlayhead() {
@@ -269,9 +412,8 @@ export function Editor({ projectId }: { projectId: string }) {
     const splitPoint = nextPoints[splitPointIndex];
     videoRef.current?.pause();
     setSettings({ ...settings, split: { points: nextPoints } });
+    seek(splitPoint, false);
     setActiveSegmentIndex(Math.min(splitPointIndex + 1, nextSegments.length - 1));
-    setCurrentTime(splitPoint);
-    if (videoRef.current) videoRef.current.currentTime = splitPoint;
     setNotice(`Split added at ${formatDuration(splitPoint)}.`);
   }
 
@@ -297,20 +439,49 @@ export function Editor({ projectId }: { projectId: string }) {
       video.pause();
       return;
     }
-    if (video.currentTime < activeSegment.start || video.currentTime >= activeSegment.end - 0.02) {
-      video.currentTime = activeSegment.start;
+    if (currentTime < activeSegment.start || currentTime >= activeSegment.end - 0.02) {
+      seek(activeSegment.start, true);
+      return;
     }
     await video.play();
   }
 
   function onTimeUpdate() {
     const video = videoRef.current;
-    if (!video) return;
-    if (video.currentTime >= activeSegment.end) {
+    if (!video || !activeClip) return;
+    const timelineTime = Math.min(activeClip.end, activeClip.start + video.currentTime);
+    if (timelineTime >= activeSegment.end) {
       video.pause();
-      video.currentTime = activeSegment.end;
+      video.currentTime = clipLocalTime(activeClip, activeSegment.end);
+      setCurrentTime(activeSegment.end);
+      return;
     }
-    setCurrentTime(video.currentTime);
+    setCurrentTime(timelineTime);
+  }
+
+  function onVideoLoaded() {
+    const video = videoRef.current;
+    if (!video) return;
+    if (pendingSeekRef.current !== null) {
+      video.currentTime = Math.min(video.duration || Number.POSITIVE_INFINITY, pendingSeekRef.current);
+      pendingSeekRef.current = null;
+    }
+    drawStopMotionFrame(true);
+    if (autoPlayAfterLoadRef.current) {
+      autoPlayAfterLoadRef.current = false;
+      void video.play().catch(() => setPlaying(false));
+    }
+  }
+
+  function onVideoEnded() {
+    if (!activeClip) return;
+    const boundary = Math.min(activeClip.end, activeSegment.end);
+    if (activeClip.end < activeSegment.end - 0.02 && selectedClipIndex < timelineClips.length - 1) {
+      seek(activeClip.end, true);
+      return;
+    }
+    setPlaying(false);
+    setCurrentTime(boundary);
   }
 
   function startCropDrag(event: ReactPointerEvent<HTMLElement>, handle: CropDrag["handle"]) {
@@ -378,7 +549,7 @@ export function Editor({ projectId }: { projectId: string }) {
   }
 
   async function renderVideo(targetSegmentIndex = selectedSegmentIndex, downloadWhenReady = false) {
-    if (!project || !sourceUrl || exporting) return;
+    if (!project || timelineClips.length === 0 || exporting) return;
     const targetSegment = segments[Math.max(0, Math.min(targetSegmentIndex, segments.length - 1))];
     if (!targetSegment) return;
     const abortController = new AbortController();
@@ -390,14 +561,21 @@ export function Editor({ projectId }: { projectId: string }) {
     setNotice("");
 
     try {
-      const source: File | string = localFile ?? sourceUrl;
+      const renderSources = timelineClips.map((clip) => ({
+        source: clip.id === "source" && localFile
+          ? localFile
+          : `/api/projects/${projectId}/clips/${encodeURIComponent(clip.id)}/media`,
+        name: clip.name,
+        duration: clip.duration,
+        width: clip.width,
+        height: clip.height,
+      }));
       const exportSettings: EditorSettings = {
         ...settings,
         trim: { start: targetSegment.start, end: targetSegment.end },
       };
       const rendered = await browserRenderer.render(
-        source,
-        localFile?.name ?? project.sourceName ?? "source.mp4",
+        renderSources,
         exportSettings,
         (progress) => setExportProgress(Math.round(progress * 0.82)),
         setExportStatus,
@@ -516,9 +694,10 @@ export function Editor({ projectId }: { projectId: string }) {
                   src={sourceUrl}
                   preload="metadata"
                   playsInline
-                  onLoadedData={() => drawStopMotionFrame(true)}
+                  onLoadedData={onVideoLoaded}
                   onSeeked={() => drawStopMotionFrame(true)}
                   onTimeUpdate={onTimeUpdate}
+                  onEnded={onVideoEnded}
                   onPlay={() => setPlaying(true)}
                   onPause={() => {
                     setPlaying(false);
@@ -565,10 +744,11 @@ export function Editor({ projectId }: { projectId: string }) {
                 )}
               </div>
               <div className="source-meta">
-                <span>{project.sourceName ?? localFile?.name}</span>
-                <span>{sourceWidth} × {sourceHeight}</span>
-                <span>{formatDuration(sourceDuration)}</span>
-                <span>{formatBytes(project.sourceSize ?? localFile?.size)}</span>
+                <span>{activeClip?.name}</span>
+                <span>Video {selectedClipIndex + 1} of {timelineClips.length}</span>
+                <span>{activeClip?.width} × {activeClip?.height}</span>
+                <span>{formatDuration(activeClip?.duration ?? 0)}</span>
+                <span>{formatBytes(activeClip?.size)}</span>
               </div>
             </>
           ) : (
@@ -580,8 +760,9 @@ export function Editor({ projectId }: { projectId: string }) {
               <small>MP4, MOV, WebM, AVI, or MKV. Maximum 2 GB in this starter.</small>
             </div>
           )}
-          {upload.error && <div className="stage-error" role="alert"><WarningCircleIcon /><span>{upload.error}</span><button type="button" onClick={() => fileInputRef.current?.click()}>Choose another</button></div>}
+          {upload.error && <div className="stage-error" role="alert"><WarningCircleIcon /><span>{upload.error}</span><button type="button" onClick={() => (project.sourceReady ? appendInputRef.current : fileInputRef.current)?.click()}>Choose another</button></div>}
           <input ref={fileInputRef} className="visually-hidden" type="file" accept="video/*,.mov,.m4v,.mkv,.avi" onChange={onFileInput} />
+          <input ref={appendInputRef} className="visually-hidden" type="file" accept="video/*,.mov,.m4v,.mkv,.avi" multiple onChange={onAppendInput} />
         </section>
 
         <Inspector
@@ -612,12 +793,17 @@ export function Editor({ projectId }: { projectId: string }) {
           trimEnd={settings.trim.end}
           splitPoints={settings.split.points}
           activeSegmentIndex={selectedSegmentIndex}
+          clips={timelineClips}
           thumbnails={thumbnails}
+          activeClipIndex={selectedClipIndex}
+          addingClip={upload.active}
           playing={playing}
           onTogglePlay={() => void togglePlay()}
           onSeek={seek}
           onTrimChange={changeTrim}
           onSelectSegment={selectSegment}
+          onAddClip={() => appendInputRef.current?.click()}
+          onRemoveClip={() => void removeActiveClip()}
         />
       </main>
 

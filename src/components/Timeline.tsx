@@ -3,12 +3,15 @@ import {
   MagnifyingGlassPlusIcon,
   PauseIcon,
   PlayIcon,
+  PlusIcon,
   SkipBackIcon,
   SkipForwardIcon,
+  TrashIcon,
 } from "@phosphor-icons/react";
 import { useMemo, useRef, useState } from "react";
 import type { PointerEvent } from "react";
 import { formatDuration } from "../lib/format";
+import type { TimelineClip } from "../lib/clip-timeline";
 import { getVideoSegments } from "../lib/video-split";
 
 type TimelineProps = {
@@ -18,20 +21,26 @@ type TimelineProps = {
   trimEnd: number;
   splitPoints: number[];
   activeSegmentIndex: number;
-  thumbnails: string[];
+  clips: TimelineClip[];
+  thumbnails: Record<string, string[]>;
+  activeClipIndex: number;
+  addingClip: boolean;
   playing: boolean;
   onTogglePlay: () => void;
   onSeek: (time: number) => void;
   onTrimChange: (start: number, end: number) => void;
   onSelectSegment: (segmentIndex: number) => void;
+  onAddClip: () => void;
+  onRemoveClip: () => void;
 };
 
 type DragMode = "playhead" | "start" | "end" | null;
 
 export function Timeline(props: TimelineProps) {
   const {
-    duration, currentTime, trimStart, trimEnd, thumbnails, playing,
+    duration, currentTime, trimStart, trimEnd, clips, thumbnails, activeClipIndex, addingClip, playing,
     splitPoints, activeSegmentIndex, onTogglePlay, onSeek, onTrimChange, onSelectSegment,
+    onAddClip, onRemoveClip,
   } = props;
   const [zoom, setZoom] = useState(1);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -97,10 +106,18 @@ export function Timeline(props: TimelineProps) {
           <button className="icon-button" type="button" onClick={() => onSeek(activeSegment?.end ?? trimEnd)} aria-label="Go to selected part end"><SkipForwardIcon weight="fill" /></button>
           <span className="timecode"><strong>{formatDuration(currentTime)}</strong> / {formatDuration(duration)}</span>
         </div>
-        <div className="timeline-zoom">
-          <MagnifyingGlassMinusIcon aria-hidden="true" />
-          <input type="range" min="0.5" max="3" step="0.1" value={zoom} onChange={(event) => setZoom(Number(event.target.value))} aria-label="Timeline zoom" />
-          <MagnifyingGlassPlusIcon aria-hidden="true" />
+        <div className="timeline-toolbar-actions">
+          <button className="timeline-add-button" type="button" onClick={onAddClip} disabled={addingClip || clips.length === 0 || clips.length >= 20}>
+            <PlusIcon weight="bold" /> {addingClip ? "Adding…" : "Add video"}
+          </button>
+          <button className="timeline-remove-button" type="button" onClick={onRemoveClip} disabled={clips.length <= 1} aria-label="Remove selected video" title="Remove selected video">
+            <TrashIcon />
+          </button>
+          <div className="timeline-zoom">
+            <MagnifyingGlassMinusIcon aria-hidden="true" />
+            <input type="range" min="0.5" max="3" step="0.1" value={zoom} onChange={(event) => setZoom(Number(event.target.value))} aria-label="Timeline zoom" />
+            <MagnifyingGlassPlusIcon aria-hidden="true" />
+          </div>
         </div>
       </div>
 
@@ -120,15 +137,26 @@ export function Timeline(props: TimelineProps) {
             ))}
           </div>
           <div className="timeline-lane">
+            {clips.map((clip, clipIndex) => (
+              <div
+                key={clip.id}
+                className="timeline-source-clip"
+                data-selected={clipIndex === activeClipIndex ? "true" : undefined}
+                style={{ left: clip.start * pixelsPerSecond, width: Math.max(8, clip.duration * pixelsPerSecond) }}
+                title={`${clipIndex + 1}. ${clip.name}`}
+              >
+                <span className="timeline-clip-label">{clipIndex + 1} · {clip.name}</span>
+                <div className="thumbnail-strip">
+                  {(thumbnails[clip.id] ?? []).length > 0
+                    ? thumbnails[clip.id].map((thumbnail, index) => <img key={`${clip.id}-${index}`} src={thumbnail} alt="" draggable={false} />)
+                    : <span className="thumbnail-placeholder">Video {clipIndex + 1}</span>}
+                </div>
+              </div>
+            ))}
             <div
-              className="timeline-clip"
+              className="timeline-trim-window"
               style={{ left: trimStart * pixelsPerSecond, width: Math.max(8, (trimEnd - trimStart) * pixelsPerSecond) }}
             >
-              <div className="thumbnail-strip">
-                {thumbnails.length > 0
-                  ? thumbnails.map((thumbnail, index) => <img key={`${thumbnail.slice(-16)}-${index}`} src={thumbnail} alt="" draggable={false} />)
-                  : <span className="thumbnail-placeholder">Frames appear here</span>}
-              </div>
               <button className="trim-handle trim-start" data-drag="start" type="button" aria-label="Adjust trim start"><i /></button>
               <button className="trim-handle trim-end" data-drag="end" type="button" aria-label="Adjust trim end"><i /></button>
             </div>
